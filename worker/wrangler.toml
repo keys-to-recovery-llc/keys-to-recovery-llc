@@ -19,8 +19,14 @@ compatibility_date = "2025-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "keys-to-recovery-llc"
-database_id = "00000000-0000-0000-0000-000000000000" # placeholder — replace at deploy time
+database_id = "3813a37f-0660-4eab-bdd7-05a34eb77a85"
 migrations_dir = "migrations"
+
+[vars]
+APP_BASE_URL = "https://keystorecoveryllc.com"
+EMAIL_FROM = "no-reply@keystorecoveryllc.com"
+NOTIFICATION_RECIPIENTS = "Support@keystorecoveryllc.com"
+CONTACT_RECIPIENT = "Support@keystorecoveryllc.com"
 
 # Non-secret configuration. Secrets go through `wrangler secret put`.
 # [vars]
