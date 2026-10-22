@@ -211,7 +211,7 @@ export default function AccountPage() {
         <Card className="border-0 shadow-xl max-w-md w-full">
           <CardContent className="p-10 text-center">
             <h2 className="text-2xl font-semibold text-[#1e3a5f] mb-4">Account Deleted</h2>
-            <p className="text-gray-600">Your account and associated data have been removed. You have been logged out.</p>
+            <p className="text-gray-600">Your account, profile, and sign-in credentials have been permanently deleted, and you have been logged out. Forms you submitted separately (such as an application or inquiry) are kept in our records and are not linked to your account.</p>
           </CardContent>
         </Card>
       </div>
@@ -273,7 +273,7 @@ export default function AccountPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-gray-600 text-sm">
-                Permanently delete your account and all associated data. This action cannot be undone.
+                Permanently delete your account, profile, and sign-in credentials. This action cannot be undone. Forms you submitted separately are kept in our records and are not linked to your account.
               </p>
 
               {!showConfirm ? (
@@ -290,7 +290,7 @@ export default function AccountPage() {
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
                     <p className="text-red-700 text-sm font-medium">
-                      Are you sure? This will permanently delete your account and all your data.
+                      Are you sure? This will permanently delete your account, profile, and sign-in credentials.
                     </p>
                   </div>
                   {deleteError && (
