@@ -175,6 +175,122 @@ npx wrangler dev --port 8787                  # Ready on http://localhost:8787
 - Real email delivery (needs the production provider, owner-gated).
 - Anything on the live domain (no deploy performed).
 
+## Frontend completion (Jessica's lane, after Codex handoff)
+
+Codex (ChatGPT's coding agent) started this branch and hit its session
+tool-call limit mid-job, honestly reporting the work incomplete. Its
+commits, all verified present and correct by this lane:
+
+- `6cee4bd` — `src/api/client.js` (same-origin Worker API client)
+- `820e555` — `package.json` (`@base44/*` removed), `ecf4827` —
+  `vite.config.js` (plugin removed, `/api` dev proxy added)
+- `122ec4d` — `index.html` (local favicon/icons, manifest, title),
+  `7303c2e` — `src/main.jsx` (service-worker registration)
+- `d4bba5a` — `src/Layout.jsx` (footer credit removed, local logo),
+  `395f071` — `src/pages/Home.jsx` (local logo)
+- `277b362` — `src/lib/AuthContext.jsx` (slim rewrite on the API
+  client), `df404e4` — `src/lib/NavigationTracker.jsx`
+  (`POST /api/logs`), `56a88ef` — `src/lib/PageNotFound.jsx`
+  (`auth.me` via client)
+- `c406b2b` — `src/pages/Apply.jsx` submission wired to
+  `POST /api/apply`
+
+Finished by this lane (commits `305e14e`, `d694521`, `f15e58b`,
+`07724c2`):
+
+1. **Investors** — the `SendEmail` call now posts
+   `{ fields, to, subject, body }` to `POST /api/investors`
+   (contract §2.2/§2.5). Em-dash subject template and the
+   success/error UX are unchanged.
+2. **Contact** — both workflows wired. The main form now really
+   submits: `POST /api/contact` with `{ fields }` (`phone` sent as
+   `null` when empty, per §2.4) — the documented defect fix; the
+   fake 1.5 s delay is gone and a failure now surfaces an error
+   banner (new UX, part of the fix). The feedback form posts the
+   byte-exact §2.3 envelope to `POST /api/feedback`, keeping the
+   original no-`try/catch` structure (a rejected request leaves the
+   form in its loading state, exactly as the original behaved;
+   contract §2.3 accepts either).
+3. **Account** — `auth.me()` / `auth.logout()` via
+   `src/api/client` (§4.2/§4.3). See deviation note (b) below.
+4. **Legacy deletion** — `src/api/base44Client.js`,
+   `base44/config.jsonc` (and the `base44/` directory),
+   `src/lib/app-params.js`, `src/pages/OAuthConsent.jsx` deleted.
+   After the rewrites, `app-params.js` had no importers left
+   (contract §4.6 anticipated exactly this). `OAuthConsent.jsx` was
+   unrouted (absent from `pages.config.js` and `App.jsx`) and is
+   the platform MCP consent surface, which has **no replacement**
+   (contract §6; question Q5 stays open) — it is preserved in git
+   history at `main @ d6df0f7` if Q5 ever resolves differently.
+5. **Dependencies** — fresh `npm install` regenerated
+   `package-lock.json` (the branch previously had none): 592
+   packages, zero `@base44` entries in the lockfile and no
+   `node_modules/@base44`.
+6. **Client reconciliation (§8)** — `src/api/client.js` endpoints,
+   `{ user }` unwrapping, and the reject-with-`.status` error
+   contract all match §4.2/§4.7/§8. One fix: `auth.logout` now
+   accepts an optional redirect URL and navigates after the session
+   ends, as §4.3 specifies (previously it ignored the argument).
+7. **Reference purge** — the stock site-builder README was replaced
+   with a project README; stale platform mentions in comments,
+   `.env.example`, `.gitignore`, and the `worker/` notes were
+   reworded (no behavior change). Case-insensitive grep for
+   `base44` over `src/`, `index.html`, root configs, `public/`,
+   `README.md`, `.env.example`, and `worker/` (excluding lockfiles)
+   returns **zero**; the only remaining mentions in the repo are
+   historical notes in `docs/API-CONTRACT.md` and this file.
+
+Deviations and observations (all deliberate, none silent):
+
+- **(a) `client.js` `auth.logout`** gained the optional-redirect
+  behavior in item 6 — contract §4.3 wins over Codex's shape.
+- **(b) Account delete flow** calls `auth.logout()` *without* the
+  original's `'/'` argument. The original argument targeted the
+  platform SDK's post-logout redirect; no such redirect exists in
+  the independent architecture, and the page's own "Account
+  Deleted" confirmation screen is its designed terminal state.
+  The session is ended server-side (`POST /api/auth/logout`)
+  exactly as before.
+- **(c) `AuthContext.logout`** (Codex's rewrite, verified, left as
+  built) redirects to `/` after sign-out; the original returned to
+  the current URL. It currently has no UI call site on this branch,
+  so the difference is not user-visible today; flagged for the
+  supervisor rather than silently changed.
+
+### Verification log (frontend completion, 2026-10-22)
+
+Environment: node v24.20.0, npm 10.9.4, wrangler 4.x (worker
+devDependency). Commands run in the fresh clone
+`~/workspace/keys-to-recovery-llc/migration/repo-frontend`:
+
+```bash
+npm install                                   # 592 packages
+npm run build                                 # ✓ built in ~7s (2103 modules)
+grep -ri "base44" dist/                       # 0 matches
+grep -ri "supabase.co" dist/                  # 0 matches
+cd worker && npm install && npm run db:migrate:local   # 0001_init ✅
+npx wrangler dev --port 8787 &                # Worker (dev mailer)
+npx vite preview --port 4173 &                # built SPA from dist/
+```
+
+| Check | Result |
+| ----- | ------ |
+| All 10 routes on the preview server (`/`, `/Home`, `/About`, `/Services`, `/Apply`, `/Contact`, `/Donate`, `/Investors`, `/Resources`, `/Account`) | `200` + app shell on every route |
+| `POST /api/contact` (payload shaped exactly as the new form sends, `phone: null`) | `200 {"ok":true}`; row stored, subject `Website Contact Inquiry: Smoke Contact`, notification logged by dev mailer |
+| `POST /api/feedback` (§2.3 envelope) | `200`; stored subject verified **byte-identical** (UTF-8 comparison incl. the em dash) |
+| `POST /api/apply` (601-char `substanceHistory`) | `400 substanceHistory exceeds 600 characters` |
+| `POST /api/apply` (valid) | `200`; dev mailer logged the **redacted** line only — application body occurs 0× in the Worker log |
+| `POST /api/investors` (valid, em-dash subject) | `200`; row stored with subject intact |
+| `POST /api/auth/register` → `GET /api/auth/me` | `201` + `{id, email, full_name, role}`; `me` `200` with the session cookie |
+| `POST /api/auth/logout` → `GET /api/auth/me` | `200` → `401 unauthenticated` (server-side revocation) |
+| `POST /api/auth/login` → `me`; wrong password | `200` → `200`; wrong password `401 invalid_credentials` |
+
+**Not verified by this lane:** real email delivery (needs the
+production provider, owner-gated); the Account page's rendered
+profile card against a live session in a browser (API round-trip
+verified; rendering was verified only to the app-shell level);
+anything on the live domain (no deploy performed).
+
 ## Hand-off notes for the frontend lane (Codex)
 
 1. **SendEmail mapping** (per contract §2.5): each call site posts to its
