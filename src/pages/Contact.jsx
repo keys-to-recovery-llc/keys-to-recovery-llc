@@ -7,12 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { base44 } from '@/api/base44Client';
+import { post } from '@/api/client';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', inquiryType: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [feedbackData, setFeedbackData] = useState({ name: '', email: '', feedbackType: '', message: '' });
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -21,15 +22,31 @@ export default function ContactPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSubmitted(true);
-    setLoading(false);
+    setError('');
+
+    try {
+      await post('/api/contact', {
+        fields: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          inquiryType: formData.inquiryType,
+          message: formData.message
+        }
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError('Failed to send your message. Please try again or call us at (253) 240-9724.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     setFeedbackLoading(true);
-    await base44.integrations.Core.SendEmail({
+    await post('/api/feedback', {
+      fields: feedbackData,
       to: 'bart@keystorecoveryllc.com',
       subject: `Site Feedback [${feedbackData.feedbackType}] — ${feedbackData.name}`,
       body: `DEVELOPER FEEDBACK / COMPLAINT PORTAL\n======================================\n\nFrom: ${feedbackData.name}\nEmail: ${feedbackData.email}\nType: ${feedbackData.feedbackType}\n\nMessage:\n${feedbackData.message}\n\nSubmitted: ${new Date().toLocaleString()}`
@@ -148,6 +165,9 @@ export default function ContactPage() {
                     <Label className="text-white/80">Message *</Label>
                     <Textarea required rows={5} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="bg-black border-[#d4a574]/20 text-white focus:border-[#d4a574] resize-none" placeholder="Tell us how we can help you..." />
                   </div>
+                  {error && (
+                    <div className="p-4 bg-red-900/30 border border-red-500/30 rounded-lg text-red-400 text-sm">{error}</div>
+                  )}
                   <Button type="submit" disabled={loading} className="w-full bg-[#d4a574] hover:bg-[#c49464] text-black font-semibold py-6 text-lg rounded-xl">
                     {loading ? (
                       <span className="flex items-center gap-2"><div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />Sending...</span>

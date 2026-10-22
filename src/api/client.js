@@ -13,7 +13,11 @@ export const auth = {
   me: async () => (await api('/api/auth/me')).user,
   login: async (email, password) => (await post('/api/auth/login', { email, password })).user,
   register: async (email, password, full_name) => (await post('/api/auth/register', { email, password, full_name })).user,
-  logout: () => post('/api/auth/logout', {}),
+  logout: async redirectUrl => {
+    const result = await post('/api/auth/logout', {});
+    if (redirectUrl) window.location.assign(redirectUrl);
+    return result;
+  },
   requestReset: email => post('/api/auth/request-password-reset', { email }),
   setPassword: async (token, password) => (await post('/api/auth/set-password', { token, password })).user,
 };

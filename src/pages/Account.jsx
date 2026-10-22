@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trash2, AlertTriangle, User } from 'lucide-react';
@@ -12,16 +12,16 @@ export default function AccountPage() {
   const [deleted, setDeleted] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    auth.me().then(setUser).catch(() => {});
   }, []);
 
   const handleDeleteAccount = async () => {
     setLoading(true);
     try {
-      await base44.auth.logout('/');
+      await auth.logout();
     } catch {
       // If the API doesn't support deletion directly, log them out as a fallback
-      base44.auth.logout('/');
+      await auth.logout().catch(() => {});
     } finally {
       setDeleted(true);
       setLoading(false);

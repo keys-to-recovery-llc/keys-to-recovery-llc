@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import MobileSelect from '@/components/MobileSelect';
-import { base44 } from '@/api/base44Client';
+import { post } from '@/api/client';
 
 const investorTypes = [
   {
@@ -101,7 +101,8 @@ ${formData.message}
 Submitted: ${new Date().toLocaleString()}
       `.trim();
 
-      await base44.integrations.Core.SendEmail({
+      await post('/api/investors', {
+        fields: formData,
         to: 'Support@keystorecoveryllc.com',
         subject: `Investor Inquiry: ${formData.fullName} — ${formData.investorType}`,
         body: emailBody
