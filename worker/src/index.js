@@ -180,7 +180,7 @@ async function handleLogin(env, payload, url) {
   const user = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
   if (!user) return json(401, { error: 'invalid_credentials' });
   if (!user.password_hash) {
-    // Migrated Base44 user who has not set a password yet (§4.8).
+    // Migrated user who has not set a password yet (§4.8).
     return json(401, { error: 'password_not_set' });
   }
   if (!(await verifyPassword(password, user.password_hash))) {

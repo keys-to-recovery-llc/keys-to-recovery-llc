@@ -1,7 +1,7 @@
 -- Keys to Recovery LLC — initial D1 schema
 -- See docs/API-CONTRACT.md for the interface this schema serves.
 
--- Users. password_hash is NULL for migrated Base44 users until they set a
+-- Users. password_hash is NULL for migrated users until they set a
 -- password through the first-login flow (see API-CONTRACT.md §4.8).
 -- password_hash format when set: pbkdf2-sha256$<iterations>$<salt b64>$<hash b64>
 CREATE TABLE users (
@@ -9,7 +9,7 @@ CREATE TABLE users (
   email             TEXT UNIQUE,
   full_name         TEXT NOT NULL,
   role              TEXT NOT NULL DEFAULT 'user',
-  external_id       TEXT UNIQUE,            -- original Base44 user ID, when migrated
+  external_id       TEXT UNIQUE,            -- original platform user ID, when migrated
   password_hash     TEXT,                   -- NULL until a password is set
   must_set_password INTEGER NOT NULL DEFAULT 0,
   created_at        TEXT NOT NULL

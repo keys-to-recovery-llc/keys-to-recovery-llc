@@ -1,39 +1,46 @@
-**Welcome to your Base44 project** 
+# Keys to Recovery LLC — Website
 
-**About**
+The public website for **Keys to Recovery LLC** (recovery housing,
+Tacoma / Pierce County, WA) — https://keystorecoveryllc.com
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+A React + Vite single-page app with a small Cloudflare Worker API
+backend. Self-hosted and independent: no third-party site-builder
+platform is involved in building, serving, or operating this site.
 
-This project contains everything you need to run your app locally.
+## Layout
 
-**Edit the code in your local development environment**
+| Path | What |
+| ---- | ---- |
+| `src/` | React app (pages in `src/pages/`, API client in `src/api/client.js`) |
+| `public/` | PWA manifest + icons, service worker, self-hosted logo, SPA `_redirects` |
+| `worker/` | Cloudflare Worker API (`/api/*`) + D1 schema migrations |
+| `docs/API-CONTRACT.md` | The normative frontend↔Worker API contract |
+| `MIGRATION.md` | Migration record, dependency audit, deploy instructions |
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+## Local development
 
-**Prerequisites:** 
+```bash
+npm install
+npm run dev            # Vite dev server; /api proxies to localhost:8787
 
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
-
+cd worker
+npm install
+npm run db:migrate:local
+npx wrangler dev       # API on http://localhost:8787 (dev mailer logs email)
 ```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
 
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
+With no email-provider env set, the Worker logs outgoing mail to the
+console and the whole site runs end-to-end with no external keys.
+See `.env.example` for the full configuration list.
+
+## Build
+
+```bash
+npm run build          # outputs dist/ (Cloudflare Pages)
 ```
 
-Run the app: `npm run dev`
+## Deployment
 
-**Publish your changes**
-
-Open [Base44.com](http://Base44.com) and click on Publish.
-
-**Docs & Support**
-
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
-
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+Owner-gated. Nothing in this repo deploys automatically. The full
+procedure (D1 creation, Worker secrets, Pages project, DNS cutover)
+is in `MIGRATION.md`.

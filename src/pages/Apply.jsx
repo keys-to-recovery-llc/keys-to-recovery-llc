@@ -92,7 +92,7 @@ ${formData.additionalInfo}
 Submitted: ${new Date().toLocaleString()}
       `.trim();
 
-      // Send email using Base44 integration
+      // Submit the composed email + structured fields via the API
       await post('/api/apply', { fields: formData,
         to: 'Support@keystorecoveryllc.com',
         subject: `New Application: ${formData.fullName} - ${formData.applicationType}`,

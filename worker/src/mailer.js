@@ -59,8 +59,8 @@ export function createMailer(env) {
 }
 
 // Optional welcome email for newly registered users. A custom "Welcome
-// Email" template exists in the Base44 admin UI in Draft status, but its
-// content is not available outside the admin UI — until the owner supplies
+// Email" template exists in the previous platform's admin UI in Draft
+// status, but its content is not available outside that UI — until the owner supplies
 // it (see MIGRATION.md, Questions for ChatGPT lane Q7), this hook is a
 // no-op unless explicitly enabled with template env vars. Registration
 // must never fail because the welcome email did.
