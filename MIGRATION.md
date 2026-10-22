@@ -367,3 +367,150 @@ helper/token available) and SSH to github.com is blocked by the runtime
 proxy. The supervisor should push `feat/debase44-independence` from an
 authenticated environment; Codex's start is gated on the contract commit
 (`8828b0d`) being visible.
+
+## Auth UI completion (Jessica's lane, 2026-10-22)
+
+Gap closed: the Worker auth API and `src/api/client.js` auth methods
+existed and were smoke-verified, but no page consumed them — on Base44,
+sign-in was platform-hosted, so without a UI nobody (including the
+migrated users whose set-password links land on
+`/Account?reset_token=...`) could authenticate. `src/pages/Account.jsx`
+now carries the full auth surface as state-driven views in the page's
+existing design system (navy `#1e3a5f` / gold `#d4a574`, `ui/*` inputs
+at `h-12`, Apply-style error/success boxes):
+
+- **Set Password view** — entered when `reset_token` is in the query
+  string. New password + confirm; client-side validation mirrors the
+  Worker rule exactly (≥ 8 characters, from
+  `handleSetPassword`/`handleRegister` in `worker/src/index.js`) plus a
+  match check. Submits `POST /api/auth/set-password`; on success the API
+  signs the user in and the account view shows. On
+  `400 invalid_or_expired_token`, the error shows with an inline
+  "request a new link" form (email → `POST /api/auth/request-password-reset`).
+- **Sign-in view** (signed-out default): login form
+  (`POST /api/auth/login`); `401 password_not_set` (§4.8 migrated user)
+  switches to an amber guidance panel — "Your account was moved from
+  our previous website" — with an "Email me a set-password link" action;
+  `401 invalid_credentials` shows a plain error. A "Forgot your
+  password?" action leads to the reset view.
+- **Register view**: full name + email + password + confirm — the exact
+  field set the Worker register handler requires (§4.7). Client-side
+  mirror of the server rules (name non-empty, password ≥ 8, match);
+  `409 email_already_registered` maps to a "try signing in" message.
+  Success signs the user in (201 + session cookie).
+- **Forgot Password view**: email → `POST /api/auth/request-password-reset`,
+  then a neutral confirmation ("If an account exists for that email
+  address, a link … is on its way") that never reveals whether the
+  account exists, matching the API's always-200 behavior.
+- **Signed-in view**: unchanged profile + delete cards, plus a Sign Out
+  button on the profile card wired to `AuthContext.logout()` (which
+  ends the session and redirects to `/`).
+
+Choices worth noting:
+
+- **returnTo (§4.4)**: after login/register/set-password, if the
+  `returnTo` query param is present it is honored via
+  `window.location.assign` — same-origin targets only, and never
+  `/Account` itself. Otherwise the user stays on `/Account` and the
+  one-time `reset_token` is scrubbed from the address bar with
+  `history.replaceState`.
+- **AuthContext**: Account keeps its own `user` state (as the page
+  always did) and uses the context only for `logout()`. It deliberately
+  does **not** call `checkAppState()` after sign-in actions: that
+  helper flips the app shell into its loading state and remounts the
+  route tree, which would discard this page's local state (including
+  the "Account Deleted" confirmation). No component renders from the
+  provider's cached user on this page, and the provider re-checks
+  `/api/auth/me` on the next full load, so the cached value cannot go
+  visibly stale.
+- **No Google sign-in UI** — the Worker route is a config-gated 501
+  stub and no credentials exist (§4.7).
+
+Verification (2026-10-22, this lane):
+
+```bash
+npm run build                                 # OK (9.55s, chunk-size warning only)
+grep -ri "base44" dist | wc -l                # 0
+grep -ri "supabase.co" dist | wc -l           # 0
+# built bundle contains the new views: "Set Your Password",
+# "Email me a set-password link", "Forgot your password",
+# "Create Account", "Email me a reset link" — each found 1x.
+cd worker && npm run db:migrate:local         # OK (already applied)
+# seeded a migrated-style user into LOCAL D1 (synthetic test data only):
+#   migrated.smoke@example.com, password_hash NULL, must_set_password 1
+npx wrangler dev --port 8787                  # Worker on http://localhost:8787
+npx vite preview --port 4173                  # built SPA; /api proxied to :8787
+```
+
+| Check | Result |
+| ----- | ------ |
+| `POST /api/auth/login` as migrated user (no password set) | `401 {"error":"password_not_set"}` |
+| `POST /api/auth/request-password-reset` (migrated user) | `200 {"ok":true}`; reset link with token logged by the dev mailer |
+| `POST /api/auth/set-password` with that token | `200 {user}` + session cookie |
+| `GET /api/auth/me` with the new session | `200 {user}` |
+| Same token reused | `400 invalid_or_expired_token` |
+| `POST /api/auth/set-password` with a 5-char password | `400 "password must be at least 8 characters"` |
+| `POST /api/auth/login` wrong password | `401 invalid_credentials` |
+| `POST /api/auth/login` correct password | `200 {user}`; subsequent `GET /api/auth/me` → `200` |
+| `POST /api/auth/register` (new user) | `201 {user}` + session cookie; `GET /api/auth/me` → `200` |
+| `POST /api/auth/register` duplicate email | `409 email_already_registered` |
+| `GET /Account` via `vite preview` | `200`, `<title>Keys to Recovery LLC</title>` |
+| Through the preview origin (same path the SPA uses): `GET /api/health`, `POST /api/auth/login`, `GET /api/auth/me` | `200` / `200` / `200` |
+| D1 after the battery | migrated user's `must_set_password` cleared to `0` |
+
+**Not verified at rendered-UI level:** this runtime has no browser, so
+the forms were not clicked through in a rendered page. Verification is
+at API level (full battery above against the real Worker + local D1),
+page-serve level (`/Account` serves `200` from the new `dist`, and the
+API round-trip succeeds through the preview origin with cookies), and
+bundle level (the built output contains the new views and zero
+platform references). A human click-through of the four views on a
+staging deploy remains an acceptance step.
+
+## Review fixes (Codex F-01/F-02)
+
+From Codex's independent review of the frontend branch; both accepted
+by the supervisor and fixed in this lane (2026-10-22).
+
+### F-02 (High) — account deletion was cosmetic; now real
+
+The Account page's delete flow only called `auth.logout()` while its
+UI claimed "Your account and associated data have been removed." —
+untrue, and user-facing copy must be honest. Fix:
+
+- **Worker**: `DELETE /api/auth/me` requires a valid session
+  (`401 unauthenticated` otherwise) and deletes, in order: the user's
+  `sessions` rows, their `password_reset_tokens` rows, their
+  `users` row; `app_logs` rows are kept but unlinked
+  (`user_id` set to `NULL`) since they are fire-and-forget navigation
+  analytics. The response clears the session cookie. **Submissions are
+  not touched**: they are anonymous form posts (`apply` / `investor` /
+  `feedback` / `contact`) with no user column or link in the schema —
+  there is nothing user-linked to delete there.
+- **Client**: `auth.deleteAccount()` → `DELETE /api/auth/me`.
+- **Account page**: the existing confirmation flow and copy are
+  unchanged; the confirm button now calls `auth.deleteAccount()` and
+  the "Account Deleted" screen shows **only** after the server
+  confirms. On failure it shows an error inside the confirmation box
+  and stays signed in (the previous logout-and-claim-success fallback
+  is gone).
+
+Smoke (same battery as above): register `delete.smoke@example.com` →
+`201`; `GET /api/auth/me` → `200`; `DELETE /api/auth/me` → `200
+{"ok":true}`; `GET /api/auth/me` with the same cookie → `401`;
+`POST /api/auth/login` with the deleted credentials → `401
+invalid_credentials`; `DELETE /api/auth/me` with no session → `401`;
+users table afterwards no longer contains the deleted user.
+
+### F-01 (Medium) — feedback form could stick in its loading state
+
+`Contact.jsx`'s `handleFeedbackSubmit` awaited `post('/api/feedback')`
+with no `try/catch`: a Worker rejection left the submit button spinning
+forever and surfaced nothing. It now mirrors the page's main contact
+handler exactly: `try/catch/finally` (`setFeedbackLoading(false)` in
+`finally`), and a `feedbackError` rendered in the page's existing
+error-box style above the submit button. The §2.3 request envelope
+(`{fields, to, subject, body}`) is byte-identical — only indentation
+inside the `try` block changed — and success behavior is unchanged.
+Covered by the build (passes) and the diff audit; the endpoint itself
+was already smoke-verified by the earlier lanes.
