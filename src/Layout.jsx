@@ -116,7 +116,7 @@ export default function Layout({ children }) {
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center">
               <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69925baf5daebb933c304d0e/80c05212b_FullLogo_NoBuffer.png" 
+                src="/logo-full.png" 
                 alt="Keys to Recovery LLC" 
                 className="h-12 w-auto"
               />
@@ -242,7 +242,7 @@ export default function Layout({ children }) {
             {/* Brand */}
             <div className="md:col-span-2">
               <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69925baf5daebb933c304d0e/80c05212b_FullLogo_NoBuffer.png" 
+                src="/logo-full.png" 
                 alt="Keys to Recovery LLC" 
                 className="h-16 w-auto mb-6"
               />
@@ -304,7 +304,7 @@ export default function Layout({ children }) {
             </p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-[#d4a574]/70 text-sm font-medium">EST 2026 | NAICS Code: 531110</p>
-              <p className="text-white/30 text-xs">This website was built with <a href="https://base44.com" target="_blank" rel="noopener noreferrer" className="text-[#d4a574]/50 hover:text-[#d4a574] transition-colors">Base44</a></p>
+              
             </div>
           </div>
         </div>
