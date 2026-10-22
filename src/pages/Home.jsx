@@ -46,7 +46,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a1a1a] to-black" />
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69925baf5daebb933c304d0e/80c05212b_FullLogo_NoBuffer.png"
+            src="/logo-full.png"
             alt=""
             className="w-[80%] max-w-3xl object-contain opacity-[0.06] select-none"
           />
