@@ -18,6 +18,7 @@ export default function ContactPage() {
   const [feedbackData, setFeedbackData] = useState({ name: '', email: '', feedbackType: '', message: '' });
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,14 +46,21 @@ export default function ContactPage() {
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     setFeedbackLoading(true);
-    await post('/api/feedback', {
-      fields: feedbackData,
-      to: 'bart@keystorecoveryllc.com',
-      subject: `Site Feedback [${feedbackData.feedbackType}] — ${feedbackData.name}`,
-      body: `DEVELOPER FEEDBACK / COMPLAINT PORTAL\n======================================\n\nFrom: ${feedbackData.name}\nEmail: ${feedbackData.email}\nType: ${feedbackData.feedbackType}\n\nMessage:\n${feedbackData.message}\n\nSubmitted: ${new Date().toLocaleString()}`
-    });
-    setFeedbackSubmitted(true);
-    setFeedbackLoading(false);
+    setFeedbackError('');
+
+    try {
+      await post('/api/feedback', {
+        fields: feedbackData,
+        to: 'bart@keystorecoveryllc.com',
+        subject: `Site Feedback [${feedbackData.feedbackType}] — ${feedbackData.name}`,
+        body: `DEVELOPER FEEDBACK / COMPLAINT PORTAL\n======================================\n\nFrom: ${feedbackData.name}\nEmail: ${feedbackData.email}\nType: ${feedbackData.feedbackType}\n\nMessage:\n${feedbackData.message}\n\nSubmitted: ${new Date().toLocaleString()}`
+      });
+      setFeedbackSubmitted(true);
+    } catch (err) {
+      setFeedbackError('Failed to send your feedback. Please try again or call us at (253) 240-9724.');
+    } finally {
+      setFeedbackLoading(false);
+    }
   };
 
   const contactInfo = [
@@ -274,6 +282,9 @@ export default function ContactPage() {
                     <Label className="text-white/80">Your Feedback *</Label>
                     <Textarea required rows={5} value={feedbackData.message} onChange={(e) => setFeedbackData({...feedbackData, message: e.target.value})} className="bg-black border-[#d4a574]/20 text-white focus:border-[#d4a574] resize-none" placeholder="Please describe the issue or feedback in detail..." />
                   </div>
+                  {feedbackError && (
+                    <div className="p-4 bg-red-900/30 border border-red-500/30 rounded-lg text-red-400 text-sm">{feedbackError}</div>
+                  )}
                   <Button type="submit" disabled={feedbackLoading} className="w-full bg-[#d4a574] hover:bg-[#c49464] text-black font-semibold py-6 text-lg rounded-xl">
                     {feedbackLoading ? (
                       <span className="flex items-center gap-2"><div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />Submitting...</span>
