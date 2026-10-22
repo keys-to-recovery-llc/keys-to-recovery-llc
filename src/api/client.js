@@ -20,4 +20,5 @@ export const auth = {
   },
   requestReset: email => post('/api/auth/request-password-reset', { email }),
   setPassword: async (token, password) => (await post('/api/auth/set-password', { token, password })).user,
+  deleteAccount: () => api('/api/auth/me', { method: 'DELETE' }),
 };
