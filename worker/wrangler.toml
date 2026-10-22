@@ -1,0 +1,32 @@
+# Keys to Recovery LLC — API Worker configuration.
+# Deploy is OWNER-GATED (see MIGRATION.md). Do not deploy from this repo
+# without the owner's explicit approval.
+#
+# Before the first deploy:
+#   1. Create the D1 database:  wrangler d1 create keys-to-recovery-llc
+#   2. Replace database_id below with the real ID it prints.
+#   3. Apply migrations:        wrangler d1 migrations apply keys-to-recovery-llc --remote
+#   4. Set secrets (never commit them):
+#        wrangler secret put SESSION_SECRET
+#        wrangler secret put EMAIL_API_KEY        (when the email provider is chosen)
+#   5. Route this Worker on the site's domain at /api/* so the Pages SPA
+#      and the API share an origin (session cookie is same-site).
+
+name = "keys-to-recovery-llc-api"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "keys-to-recovery-llc"
+database_id = "00000000-0000-0000-0000-000000000000" # placeholder — replace at deploy time
+migrations_dir = "migrations"
+
+# Non-secret configuration. Secrets go through `wrangler secret put`.
+# [vars]
+# ENVIRONMENT = "production"
+# EMAIL_API_URL = "https://provider.example/v1/send"
+# EMAIL_FROM = "no-reply@keystorecoveryllc.com"
+# NOTIFICATION_RECIPIENTS = "Support@keystorecoveryllc.com,bart@keystorecoveryllc.com"
+# CONTACT_RECIPIENT = "Support@keystorecoveryllc.com"
+# APP_BASE_URL = "https://keystorecoveryllc.com"

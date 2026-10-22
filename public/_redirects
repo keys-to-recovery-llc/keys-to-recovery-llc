@@ -1,0 +1,4 @@
+# SPA fallback for Cloudflare Pages: deep links (e.g. /Apply, /Account)
+# serve the app shell. Existing static files (manifest, icons, sw.js,
+# built assets) are served first by Pages and are not rewritten.
+/* /index.html 200

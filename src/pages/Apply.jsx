@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import MobileSelect from '@/components/MobileSelect';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { base44 } from '@/api/base44Client';
+import { post } from '@/api/client';
 
 export default function ApplyPage() {
   const [formData, setFormData] = useState({
@@ -92,8 +92,8 @@ ${formData.additionalInfo}
 Submitted: ${new Date().toLocaleString()}
       `.trim();
 
-      // Send email using Base44 integration
-      await base44.integrations.Core.SendEmail({
+      // Submit the composed email + structured fields via the API
+      await post('/api/apply', { fields: formData,
         to: 'Support@keystorecoveryllc.com',
         subject: `New Application: ${formData.fullName} - ${formData.applicationType}`,
         body: emailBody
