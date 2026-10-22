@@ -268,6 +268,21 @@ export default {
         if (!user) return json(401, { error: 'unauthenticated' });
         return json(200, { user: publicUser(user) });
       }
+      if (pathname === '/api/auth/me' && method === 'DELETE') {
+        // Real account deletion (Codex review F-02): the Account page's
+        // delete flow used to only log out while claiming the account
+        // was removed. This deletes the identity record and everything
+        // keyed to it. Submissions are anonymous form posts with no
+        // user link (see migrations/0001_init.sql), so nothing else
+        // references the user; app_logs rows are kept but unlinked.
+        const user = await getSessionUser(env.DB, env, request);
+        if (!user) return json(401, { error: 'unauthenticated' });
+        await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(user.id).run();
+        await env.DB.prepare('DELETE FROM password_reset_tokens WHERE user_id = ?').bind(user.id).run();
+        await env.DB.prepare('UPDATE app_logs SET user_id = NULL WHERE user_id = ?').bind(user.id).run();
+        await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(user.id).run();
+        return json(200, { ok: true }, { 'Set-Cookie': clearSessionCookie(url) });
+      }
       if (pathname === '/api/auth/request-password-reset' && method === 'POST') {
         return handleRequestPasswordReset(env, request, await readJson(request));
       }
