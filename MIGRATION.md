@@ -514,3 +514,34 @@ error-box style above the submit button. The §2.3 request envelope
 inside the `try` block changed — and success behavior is unchanged.
 Covered by the build (passes) and the diff audit; the endpoint itself
 was already smoke-verified by the earlier lanes.
+
+## Resources build-out (2026-10-22, branch `feat/resources-buildout`)
+
+The Resources page listed 15 resources, every one with `link:"#"`. Per the
+owner's order, all 15 now resolve to real, viewable content:
+
+- **6 internal articles** (original copy in `src/data/resourceArticles.js`,
+  rendered by `src/pages/ResourceArticle.jsx` at `/Resources/:resourceId`):
+  What is Recovery Housing? · The 12 Steps Explained (flagship — all twelve
+  steps in short standard wording with per-step exposition, "attraction rather
+  than promotion" tone, AA non-affiliation note pointing to aa.org) · Early
+  Recovery: What to Expect · Navigating Relationships in Recovery · Supporting
+  a Loved One in Recovery · Co-occurring Disorders: Dual Diagnosis. Standard
+  articles run 739–835 words; the flagship runs longer by design. Facts are
+  grounded in SAMHSA (recovery dimensions/principles, co-occurring disorders,
+  National Helpline) and NARR levels — sources in `docs/resources-mapping.md`.
+- **9 external links** (new tab, `rel="noopener noreferrer"`), each fetched and
+  title/topic-verified during the build: WA HCA peer specialists (#15), SMART
+  Recovery Toolbox (#13), SAMHSA Matrix relapse-prevention handouts via AHRQ
+  (#6), CFPB Your Money, Your Goals booklets (#8), CareerOneStop
+  justice-impacted get-started guide (#14), Johann Hari TED talk on YouTube
+  (#3), UCLA Mindful guided meditations (#5, #10), TED-Ed lesson on Dr. Nadine
+  Burke Harris's trauma talk (#9 — TED-Ed page chosen because YouTube
+  rate-limited direct verification; it embeds the same talk).
+
+Verification: `npm run build` passes; dist greps base44 = 0, supabase.co = 0;
+all six article routes serve 200 in `vite preview`; all external URLs fetched
+200 (non-YouTube set re-fetched at end of run). No `link:"#"` remains. Diff is
+limited to `src/App.jsx` (one route), `src/pages/Resources.jsx`, the two new
+files, `docs/resources-mapping.md`, and this section — no other pages, no
+`worker/`, no DNS changes. Not deployed; supervisor pushes/merges/deploys.
