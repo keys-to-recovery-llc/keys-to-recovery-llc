@@ -5,6 +5,7 @@ import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import Account from './pages/Account';
 import Resources from './pages/Resources';
+import Directory from './pages/Directory';
 import ResourceArticle from './pages/ResourceArticle';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
@@ -66,6 +67,9 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/Resources/:resourceId" element={
         <LayoutWrapper currentPageName="Resources"><ResourceArticle /></LayoutWrapper>
+      } />
+      <Route path="/Directory" element={
+        <LayoutWrapper currentPageName="Directory"><Directory /></LayoutWrapper>
       } />
       <Route path="/Account" element={
         <LayoutWrapper currentPageName="Account"><Account /></LayoutWrapper>

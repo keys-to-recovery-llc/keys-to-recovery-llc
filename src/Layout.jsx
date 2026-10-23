@@ -65,7 +65,8 @@ export default function Layout({ children }) {
     { name: 'Donate', page: 'Donate' },
     { name: 'Investors', page: 'Investors' },
     { name: 'Contact', page: 'Contact' },
-    { name: 'Resources', page: 'Resources' }
+    { name: 'Resources', page: 'Resources' },
+    { name: 'Directory', page: 'Directory' }
   ];
 
   const isActive = (page) => {
