@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 //
 // Listings are per-organization records (name, verified website, plain-language
 // services, who they serve, phone, canonical taxonomy tags) built from public
-// rosters + each org's own site, starting with the Pierce County, WA pilot.
+// rosters + each org's own site, starting with the Pierce County, WA pilot; Grays Harbor County, WA added 2026-10-22 as pilot #2.
 // Shipped as lazy-loaded assets under public/data/ (never bundled); a county's
 // asset loads only when a visitor opens that county's locality view.
 //
@@ -37,6 +37,7 @@ export const EXCLUDED_EINS = new Set([]);
 // yet and the locality view renders no org section (gateways carry them).
 const COUNTY_ORG_ASSETS = {
   53053: '/data/orgs-pierce.json', // Pierce County, WA
+  53027: '/data/orgs-grays-harbor.json', // Grays Harbor County, WA
 };
 
 const orgPromises = new Map();
