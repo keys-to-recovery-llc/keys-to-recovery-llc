@@ -545,3 +545,39 @@ all six article routes serve 200 in `vite preview`; all external URLs fetched
 limited to `src/App.jsx` (one route), `src/pages/Resources.jsx`, the two new
 files, `docs/resources-mapping.md`, and this section — no other pages, no
 `worker/`, no DNS changes. Not deployed; supervisor pushes/merges/deploys.
+
+## Recovery directory (2026-10-22, branch `feat/recovery-directory`)
+
+A nationwide recovery resource directory at **`/Directory`** (nav link added
+after Resources; explicit route in `src/App.jsx` following the Resources
+pattern). Built by the directory platform agent; **not deployed by that
+agent** — supervisor merges/deploys after QC.
+
+- **Crisis block** (pinned first, visually distinct): 988 Lifeline, SAMHSA
+  National Helpline, Crisis Text Line, Never Use Alone, plus a plain
+  emergencies = 911 note.
+- **National directory**: 23 verified locators/gateways in 9 groups
+  (`src/data/directory.js`), each tagged with the owner's canonical service
+  taxonomy (`directory-data/TAXONOMY.md` — the filter set; AA/NA finders are
+  labeled AA Meetings / NA Meetings). Every URL was fetched and
+  content-checked during the build; record in `docs/directory-mapping.md`.
+- **Locality search**: ZIP / city / county search resolving through the
+  Census gazetteer (33,791 ZIPs, 3,235 counties), served lazily from
+  `/data/localities.json` (~4.5 MB, never bundled). A locality view shows the
+  place identity, its state's verified gateway set, and national-locator
+  links — prefilled ONLY where a deep-link pattern was verified by fetching
+  a live example (Oxford House `?q=<city>`; VA SUD locator `?STATE=<ST>`).
+  All other locators open plainly; no parameter pattern was fabricated.
+- **State gateways**: 56 verified files (50 states + DC + AS/GU/MP/PR/VI) in
+  `src/data/states/`, imported via glob so future refreshes drop in. 23
+  states/territories have no NARR affiliate and say so on the card.
+- **County org layer (slot, empty)**: per-organization listings (Pierce
+  County pilot first) plug into `src/data/gazetteer.js` /
+  `CountyOrgsSection`, grouped by taxonomy category. Publication gate
+  enforced by default: only records with `vetting.result === "CLEAR"`
+  (VETTING.md) can render; EXCLUDE-*/HOLD-REVIEW/no-vetting records never
+  render and no accusation text appears in the UI.
+- **Coverage**: crisis 4 (+911 note) · national 23 · states 56/56 ·
+  gazetteer 33,791 ZIPs. Build passes; dist greps base44 = 0,
+  supabase.co = 0; preview /Directory 200 with locality spot checks
+  (Tacoma WA 98402, Sheridan WY 82801, Miami FL 33101) passing.
