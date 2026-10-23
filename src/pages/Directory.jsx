@@ -567,7 +567,7 @@ export default function DirectoryPage() {
               className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11 focus:border-[#d4a574]"
             />
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          <div className="flex items-center gap-2 flex-wrap pb-1">
             <Filter className="h-4 w-4 text-[#d4a574] flex-shrink-0" />
             <span className="text-white/40 text-xs flex-shrink-0">Service:</span>
             <FilterPill value="All" current={tag} onChange={setTag} />
