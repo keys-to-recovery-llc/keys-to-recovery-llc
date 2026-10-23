@@ -199,6 +199,11 @@ export function FacilitiesSection({ locality, initialFilters }) {
                   {f.name2 && f.name2 !== f.name && (
                     <p className="text-white/60 text-sm">{f.name2}</p>
                   )}
+                  {f.closureNote && (
+                    <p className="text-red-300 text-xs font-semibold mt-1 border border-red-400/30 bg-red-400/10 rounded-lg px-2 py-1">
+                      {f.closureNote}
+                    </p>
+                  )}
                   {f.address && <p className="text-white/40 text-sm mt-1">{f.address}</p>}
                   {(f.city || f.zip) && (
                     <p className="text-white/40 text-sm mt-1">
@@ -243,8 +248,10 @@ export function FacilitiesSection({ locality, initialFilters }) {
         otherwise approved by their state agency as of that survey — a dated
         snapshot, not a live license check — and services may have changed, so
         please verify details when you contact a facility. The published
-        directories do not include facility websites, so phone is the fastest
-        way to reach them.
+        directories do not include facility websites; where a facility&apos;s
+        own website has been verified (currently Washington), a Website link
+        appears on its card — everywhere else, phone is the fastest way to
+        reach them.
       </p>
     </div>
   );
