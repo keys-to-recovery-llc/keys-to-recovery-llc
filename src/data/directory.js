@@ -172,14 +172,14 @@ export const nationalCategories = [
       {
         name: 'Al-Anon Family Groups',
         tags: ["Family Support"],
-        url: 'https://al-anon.org/meetings/',
+        url: 'https://meetings.al-anon.org/',
         description:
           'Support for families and friends of people with a drinking problem — find Al-Anon and Alateen meetings.',
       },
       {
         name: 'Nar-Anon Family Groups',
         tags: ["Family Support"],
-        url: 'https://www.nar-anon.org/',
+        url: 'https://www.nar-anon.org/find-a-meeting/',
         description:
           'A 12-step program for families and friends of people with drug addiction — find a meeting near you.',
       },

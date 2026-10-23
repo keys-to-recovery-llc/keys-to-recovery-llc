@@ -39,8 +39,8 @@ NA — NA Meetings (https://www.na.org/meetingsearch/) · SMART — Other Recove
 Meetings & Peer Support (https://meetings.smartrecovery.org/meetings/) ·
 Celebrate Recovery — Other Recovery Meetings & Peer Support + Churches &
 Faith-Based Support (https://www.celebraterecovery.com/) · Al-Anon — Family
-Support (https://al-anon.org/meetings/) · Nar-Anon — Family Support
-(https://www.nar-anon.org/).
+Support (https://meetings.al-anon.org/ — note: al-anon.org/meetings/ returns a 404 page; the meeting search lives on the meetings subdomain, fetched 200) · Nar-Anon — Family Support
+(https://www.nar-anon.org/find-a-meeting/).
 Peer & Community: Faces & Voices of Recovery (https://facesandvoicesofrecovery.org/).
 Family: Partnership to End Addiction (https://drugfree.org/).
 Reentry: National Reentry Resource Center (https://nationalreentryresourcecenter.org/ —
@@ -66,10 +66,10 @@ because its /resources/ path returns 404.
 
 | Locator | Pattern | Verdict |
 | --- | --- | --- |
-| Oxford House Vacancy Finder | `https://oxfordvacancies.com/?q=<city>` (e.g. ?q=Tacoma) | **VERIFIED** — ?q=Tacoma returned Tacoma/Pierce results (Tacoma×1, Miami×0); ?q=Miami returned the inverse (Miami×3, Tacoma×0). ?state=<ST> also changed results by state. Builder uses ?q=<city>. |
+| Oxford House Vacancy Finder | `https://oxfordvacancies.com/?q=<city>` (e.g. ?q=Tacoma) | **VERIFIED** — ?q=Tacoma returned Tacoma×15, Miami×0; ?q=Miami returned the inverse (Miami×16, Tacoma×0). ?state=<ST> also changed results by state. Builder uses ?q=<city>. |
 | VA SUD Program Locator | `https://www.va.gov/directory/GUIDE/state_SUD.cfm?STATE=<ST>` | **VERIFIED** — STATE=WA returned the Washington locations page (title matched); STATE=WY example re-fetched 200 at end of run. Builder uses the locality's state. |
 | FindTreatment.gov | — | NOT verified. The site is a JS app: fetched HTML shell is identical with and without parameters. Its documented JSON API (sAddr lat,lng) is a data API, not a user-facing link. Plain locator link used. |
-| AA — Find A.A. | `?dist_center[geocoder][geolocation_geocoder_address]=<city>` | NOT verified — Tacoma and Miami examples returned the identical generic shell (4,979 bytes each). Plain link used. |
+| AA — Find A.A. | `?dist_center[geocoder][geolocation_geocoder_address]=<city>` | NOT verified — Tacoma, Miami, and a nonsense-city (Zxqville, ZZ) example each returned a ~66.6 KB page in which the submitted term appears 13 times as a form/config echo with no location-specific meeting results in the fetched content (results load client-side). Plain link used. Correction 2026-10-22: an earlier draft of this row cited a 4,979-byte shell — that figure belonged to FindTreatment.gov, not AA; the verdict is unchanged. |
 | NA Meeting Search | — | NOT verified — form/session-based search; no GET pattern could be confirmed. Plain link used. |
 | SMART Recovery Meetings | `?location=` / `?search=` | NOT verified — both returned the generic meeting list with no location content. Plain link used. |
 | 211.org | `?query=` on /search | NOT valid — https://www.211.org/search?query=98402 returns 404; homepage search is JS-driven. Plain link used; the practical local route is each state's own 211 (in the state gateways). |
