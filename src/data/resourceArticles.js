@@ -287,7 +287,8 @@ export const resourceArticles = {
         heading: "How to read the steps",
         paragraphs: [
           "The steps are a sequence, meant to be worked in order, usually with a sponsor — someone who has worked them and can walk beside you while you do. They are not a self-improvement checklist or a set of beliefs to agree with. They are closer to a series of actions: admit, believe, decide, look, tell, repair, maintain, give away.",
-          "You will notice the language of God \"as we understood Him.\" That phrase is doing deliberate work. The program does not hand anyone a definition; it leaves the understanding to each person, and people have worked these steps with understandings ranging from traditional faith to the recovery group itself. What the steps insist on is narrower and more practical than theology: that your own unaided will has not been enough, and that help — from somewhere beyond your isolated self — is available if you are willing to receive it. Nobody needs to have that figured out to begin. The only thing required to start is the honesty of Step One."
+          "You will notice the language of God \"as we understood Him.\" That phrase is doing deliberate work. The program does not hand anyone a definition; it leaves the understanding to each person, and people have worked these steps with understandings ranging from traditional faith to the recovery group itself. What the steps insist on is narrower and more practical than theology: that your own unaided will has not been enough, and that help — from somewhere beyond your isolated self — is available if you are willing to receive it. Nobody needs to have that figured out to begin. The only thing required to start is the honesty of Step One.",
+          "One more thing before you start: the steps were never meant to be vague. The book that introduced them — Alcoholics Anonymous, known everywhere as the Big Book — gives plain, specific directions for working each one. So under every step below, after our explanation, there is an \"Instructions\" button. Open it and you will find the book's own directions for that step, in the book's own words: the prayer on page 63 for Step Three, the written inventory format on page 65 for Step Four, the directions for Step Ten on page 84, and so on. Our explanations are the map. Those instructions are the road."
         ]
       }
     ],
@@ -405,7 +406,7 @@ export const resourceArticles = {
         ]
       }
     ],
-    closingNote: "Keys to Recovery LLC is not affiliated with Alcoholics Anonymous or any other 12-step fellowship, and this page is a general educational overview written in our own words — not program literature. The Twelve Steps are quoted in their short standard wording. If you would like to explore the steps with people who live them, meeting information is available at aa.org."
+    closingNote: "Keys to Recovery LLC is not affiliated with Alcoholics Anonymous or any other 12-step fellowship. The explanations on this page are written in our own words; the Instructions panels quote the directions from the first edition of Alcoholics Anonymous (1939), which is in the public domain, so you can read exactly what the book itself says. The Twelve Steps are quoted in their short standard wording. If you would like to explore the steps with people who live them, meeting information is available at aa.org."
   }
 };
 
