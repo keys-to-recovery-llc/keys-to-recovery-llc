@@ -104,7 +104,6 @@ export default function Layout({ children }) {
             </div>
           </div>
           </div>
-          </div>
 
           {/* Navigation */}
       <header 
@@ -310,6 +309,7 @@ export default function Layout({ children }) {
           </div>
         </div>
       </footer>
+    </div>
     </>
   );
 }
