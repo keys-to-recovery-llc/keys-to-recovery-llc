@@ -4,7 +4,7 @@
    intercepted. Registered by the frontend (see MIGRATION.md hand-off
    notes) — keep the registration snippet in sync with CACHE_NAME bumps. */
 
-const CACHE_NAME = 'ktr-static-v1';
+const CACHE_NAME = 'ktr-static-v2';
 const PRECACHE = [
   '/manifest.json',
   '/favicon.png',
@@ -36,6 +36,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/api/')) return; // API: always live
+  if (url.pathname.startsWith('/data/')) return; // Directory data JSON: always live — cache-first here served a stale 137-org asset after the 143-org update (2026-10-22); data must never be cached by the SW
 
   if (request.mode === 'navigate') {
     // Network-first for pages; fall back to cache, then to the SPA shell.
