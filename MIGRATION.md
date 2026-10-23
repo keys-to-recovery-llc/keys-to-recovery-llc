@@ -571,20 +571,82 @@ agent** — supervisor merges/deploys after QC.
 - **State gateways**: 56 verified files (50 states + DC + AS/GU/MP/PR/VI) in
   `src/data/states/`, imported via glob so future refreshes drop in. 23
   states/territories have no NARR affiliate and say so on the card.
-- **County org layer (slot, empty)**: per-organization listings (Pierce
-  County pilot first) plug into `src/data/gazetteer.js` /
-  `CountyOrgsSection`, grouped by taxonomy category. Publication gate
-  enforced by default: only records with `vetting.result === "CLEAR"`
-  (VETTING.md) can render; EXCLUDE-*/HOLD-REVIEW/no-vetting records never
-  render and no accusation text appears in the UI.
+- **County org layer (WIRED, Pierce County pilot)**: per-organization
+  listings plug into `CountyOrgsSection`, grouped by taxonomy category.
+  Publication gate enforced by default: only records with
+  `vetting.result === "CLEAR"` (VETTING.md) can render; EXCLUDE-*/HOLD-REVIEW/
+  no-vetting records never render and no accusation text appears in the UI.
+  Integration state below.
 - **Coverage**: crisis 4 (+911 note) · national 23 · states 56/56 ·
   gazetteer 33,791 ZIPs. Build passes; dist greps base44 = 0,
   supabase.co = 0; preview /Directory 200 with locality spot checks
   (Tacoma WA 98402, Sheridan WY 82801, Miami FL 33101) passing.
-- **Facility layer (seam only, 2026-10-22)**: the SAMHSA licensed-facility
-  roster (per-state JSON at `directory-data/facilities/<ST>.json`, counts in
-  `facilities-stats.json`) plugs into `src/data/facilities.js` /
-  `FacilitiesSection` in the locality view — listed by level of care,
-  filterable by Detox / Residential / Outpatient / MAT / Medicaid. No data
-  is imported yet; the section renders nothing until the supervisor's
-  provenance + QC handover.
+- **Facility layer (WIRED)**: the SAMHSA licensed-facility roster plugs into
+  `src/data/facilities.js` / `FacilitiesSection` in the locality view —
+  listed by level of care, filterable by Detox / Residential / Outpatient /
+  MAT / Medicaid. Integration state below.
+
+### Data integration (2026-10-22, supervisor handover)
+
+Three hookups landed on top of the platform build (commits: state sync,
+Pierce orgs, facility layer). Regeneration scripts live in `scripts/` —
+re-run them after refreshing the source data in
+`~/workspace/keys-to-recovery-llc/directory-data/`.
+
+1. **State gateways synced.** `directory-data/states/*.json` (QC-backfilled:
+   4 dead links fixed, several notes updated; changed files MD/MS/NJ/NM/RI/
+   VA/VT) copied over `src/data/states/`. All 56 files parse; the glob
+   import in `src/data/states.js` picks them up (verified: the built bundle
+   contains the backfilled NJ-CARS entry).
+2. **Pierce County orgs live.** `scripts/merge-pierce-orgs.mjs` merges the
+   20 pilot batch files (902 records) into `public/data/orgs-pierce.json`
+   (82.6 KB; ~23 KB gzip), keeping ONLY `status="ready"` records — **137
+   orgs, all `vetting.result="CLEAR"`**. The asset is lazy-loaded by the new
+   orgs data module `src/data/orgs.js` (`useCountyOrgs`), which re-applies
+   the publication gate at runtime; the Pierce County, WA locality view
+   renders the orgs grouped by canonical taxonomy tags (name, city,
+   plain-language services, phone, verified website; a catch-all group
+   keeps cleared-but-untagged orgs visible). Shipped records carry only the
+   gate fields (`vetting.result/checkedAt`) — the full vetting source trail
+   stays in directory-data.
+   - **Flip switch**: `EXCLUDED_EINS` at the top of `src/data/orgs.js`,
+     EMPTY. Greater Lakes Mental Healthcare (Lakewood, EIN 916064184) is
+     the one ready record with a MultiCare affiliation disclosure in its
+     vetting sources (parent MultiCare's $3.728M settlement over Spokane
+     spinal surgeries; Greater Lakes not named, conduct unrelated — record
+     stands CLEAR). If the owner rules strict, add `'916064184'` — one
+     line, no data change.
+3. **Facilities live.** `scripts/slim-facilities.mjs` slims the 20,371
+   SAMHSA records (2025 National Directories / 2024 N-SUMHSS; provenance in
+   `directory-data/facilities/source/PROVENANCE.md`; full records archived
+   in directory-data, untouched) into `public/data/facilities/<ST>.json`
+   (55 chunks, UI fields only). `src/data/facilities.js` lazy-fetches the
+   locality's state chunk, adapts records (levels: detox / residential /
+   outpatient incl. partial-hospitalization / hospital-inpatient under its
+   own label; a "Level of care not reported" catch-all covers 34 survey
+   rows with no setting codes — all 20,371 records render in ≥1 group) and
+   narrows to the locality's county with a state-roster fallback. Filters
+   Detox / Residential / Outpatient / MAT / Medicaid verified working (see
+   below). Cards show program name, street address, intake lines and
+   licensure/accreditation (`licenseSummary`). The section carries the
+   provenance disclosure: 2024 survey snapshot, services may change, verify
+   when contacting a facility, facility websites are not in the published
+   directories (phone-first). `facilities-stats.json` is copied to
+   `public/data/facilities-stats.json`; the hero line surfaces its counts
+   ("20,371 licensed treatment facilities (SAMHSA 2024 survey)").
+   - **Verification (node, against the shipped chunks + modules):**
+     98402 Tacoma → Pierce County narrows to 36 facilities (matches
+     `facilities-stats.json` byStateCounty exactly); Detox filter → the 2
+     Pierce County detox facilities (Royal WA Sumner; Sound Integrated
+     Health LLC, Tacoma); Residential 3, Outpatient 29, MAT 13, Medicaid
+     35. 60614 Chicago → Cook County 350 (matches stats). 82801 Sheridan
+     WY → 3 Sheridan County facilities.
+   - **Asset weight**: facilities 28.0 MB raw total across 55 chunks but
+     lazy per state — largest chunk CA 2,466,124 B raw / 174,501 B gzip;
+     WA 582,563 B raw. All-55 gzip total would be 1,860,434 B if ever
+     preloaded (it is not). Orgs asset 82,632 B raw / 22,947 B gzip.
+     Stats 74,075 B. `public/data/` is never bundled.
+- **Post-integration verification**: `npm run build` passes; dist greps
+  base44 = 0, supabase.co = 0; `vite preview`: `/Directory` 200 and
+  `/data/orgs-pierce.json`, `/data/facilities/{WA,IL,WY,CA}.json`,
+  `/data/facilities-stats.json`, `/data/localities.json` all 200.
