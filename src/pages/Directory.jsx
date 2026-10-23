@@ -10,7 +10,8 @@ import {
   crisisResources, nationalCategories, nationalEntries, TAXONOMY, US_STATES, TERRITORIES,
 } from '@/data/directory';
 import { stateGateways, stateGatewayByAbbr } from '@/data/states';
-import { loadGazetteer, searchLocalities, orgsForCounty } from '@/data/gazetteer';
+import { loadGazetteer, searchLocalities } from '@/data/gazetteer';
+import { useCountyOrgs } from '@/data/orgs';
 import { locatorUrl, isPrefilled } from '@/data/locators';
 import { facilitiesForLocality, filterFacilities, groupFacilitiesByLevel, FACILITY_FILTERS } from '@/data/facilities';
 
@@ -46,35 +47,62 @@ function ExtLink({ href, children, className = '' }) {
   );
 }
 
-// County organization listings (org-level data layer) — INTEGRATION SLOT.
-// Renders ONLY orgs returned by orgsForCounty(), which enforces the owner's
+// County organization listings (org-level data layer).
+// Renders ONLY orgs returned by useCountyOrgs(), which enforces the owner's
 // publication gate: a listing appears only when its record carries
-// vetting.result === "CLEAR" (see src/data/gazetteer.js + VETTING.md).
-// Grouped by the canonical taxonomy categories. With no cleared orgs for a
-// county this section renders nothing at all.
+// vetting.result === "CLEAR" and its EIN is not in the EXCLUDED_EINS flip
+// switch (see src/data/orgs.js + directory-data/VETTING.md). Orgs are
+// lazy-loaded per county; grouped by the canonical taxonomy categories,
+// with a final catch-all group so a cleared org is never silently dropped
+// for lacking a tag. Counties without cleared orgs render nothing at all.
 function CountyOrgsSection({ locality }) {
-  const orgs = orgsForCounty(locality?.countyFips);
-  if (!locality || orgs.length === 0) return null;
+  const { orgs, loading } = useCountyOrgs(locality?.countyFips);
+  if (!locality) return null;
+  if (loading) {
+    return (
+      <div className="mt-6">
+        <h4 className="text-white font-semibold mb-3">Local organizations in {locality.county}</h4>
+        <p className="text-white/40 text-sm">Loading local organizations…</p>
+      </div>
+    );
+  }
+  if (orgs.length === 0) return null;
   const byCategory = TAXONOMY.map((cat) => ({
     category: cat,
     orgs: orgs.filter((o) => (o.tags || []).includes(cat)),
   })).filter((g) => g.orgs.length > 0);
+  const untagged = orgs.filter((o) => !(o.tags || []).some((t) => TAXONOMY.includes(t)));
+  const groups = untagged.length > 0
+    ? [...byCategory, { category: 'More local organizations', orgs: untagged }]
+    : byCategory;
   return (
     <div className="mt-6">
-      <h4 className="text-white font-semibold mb-3">
+      <h4 className="text-white font-semibold mb-1">
         Local organizations in {locality.county}
       </h4>
-      {byCategory.map((g) => (
+      <p className="text-white/40 text-sm mb-3">
+        {orgs.length} verified local organizations — every listing checked against
+        the organization&apos;s own site.
+      </p>
+      {groups.map((g) => (
         <div key={g.category} className="mb-4">
           <p className="text-[#d4a574]/80 text-xs uppercase tracking-widest mb-2">{g.category}</p>
           <div className="grid md:grid-cols-2 gap-3">
             {g.orgs.map((o) => (
-              <div key={o.name} className="border border-white/10 rounded-xl p-4 bg-black/40">
+              <div key={o.ein || o.name} className="border border-white/10 rounded-xl p-4 bg-black/40">
                 <p className="text-white font-medium">{o.name}</p>
-                {o.services && <p className="text-white/50 text-sm mt-1">{o.services}</p>}
+                {o.city && (
+                  <p className="text-white/40 text-sm mt-0.5">{o.city}{o.zip ? `, ${o.zip}` : ''}</p>
+                )}
+                {(o.services || []).length > 0 && (
+                  <p className="text-white/50 text-sm mt-1">
+                    {Array.isArray(o.services) ? o.services.join(' · ') : o.services}
+                  </p>
+                )}
                 {o.serves && <p className="text-white/40 text-xs mt-1">Serves: {o.serves}</p>}
-                <div className="flex gap-4 mt-2">
+                <div className="flex gap-4 mt-2 flex-wrap">
                   {o.url && <ExtLink href={o.url}>Website</ExtLink>}
+                  {o.meetingListUrl && <ExtLink href={o.meetingListUrl}>Meeting list</ExtLink>}
                   {o.phone && (
                     <a href={`tel:${o.phone}`} className="inline-flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline">
                       <Phone className="h-3.5 w-3.5" /> {o.phone}

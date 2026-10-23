@@ -108,37 +108,10 @@ export function searchLocalities(gaz, rawQuery, limit = 8) {
 }
 
 // ---------------------------------------------------------------------------
-// County organization listings — INTEGRATION SLOT (org-level data layer).
-// The supervisor is building per-organization listings (name, verified
-// website, plain-language services, who they serve, phone, taxonomy tags)
-// landing at directory-data/orgs/<county>/*.json, starting with a Pierce
-// County WA pilot. When that data passes QC it will be handed over and
-// imported here, e.g.:
-//
-//   const orgModules = import.meta.glob('./orgs/*.json', { eager: true });
-//   export const countyOrgsByFips = groupBy(orgModules, 'countyFips');
-//
-// Until then this is an empty map: the locality view renders its
-// CountyOrgsSection only when orgs exist for the county, grouped by the
-// canonical taxonomy categories (src/data/directory.js TAXONOMY). Nothing
-// blocks on this — gateways + locators ship without it.
-//
-// PUBLICATION GATE (owner directive; protocol directory-data/VETTING.md):
-// an org-level listing renders ONLY when its record carries
-// vetting.result === "CLEAR". Records with EXCLUDE-FRAUD, EXCLUDE-REVOKED,
-// or HOLD-REVIEW — or with no vetting block at all — NEVER render, and no
-// accusation/exclusion text ever appears in the UI (excluded orgs simply
-// do not appear). The import below must pass every record through
-// publishableOrgs() by default. State gateway entries (agency, NARR
-// affiliate, 211) are institutional and exempt from this org filter.
+// County organization listings live in src/data/orgs.js (lazy-loaded assets
+// under public/data/, publication gate + EXCLUDED_EINS flip switch there).
+// The Pierce County, WA pilot (countyFips 53053) is wired; counties without
+// an org asset render no org section. publishableOrgs is re-exported here
+// for compatibility with the original seam.
 // ---------------------------------------------------------------------------
-export const countyOrgsByFips = {};
-
-export function publishableOrgs(orgs) {
-  if (!Array.isArray(orgs)) return [];
-  return orgs.filter((o) => o && o.vetting && o.vetting.result === 'CLEAR');
-}
-
-export function orgsForCounty(countyFips) {
-  return publishableOrgs(countyOrgsByFips[countyFips] || []);
-}
+export { publishableOrgs } from './orgs.js';
