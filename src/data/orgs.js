@@ -41,6 +41,9 @@ export const EXCLUDED_EINS = new Set([
 const COUNTY_ORG_ASSETS = {
   53053: '/data/orgs-pierce.json', // Pierce County, WA
   53027: '/data/orgs-grays-harbor.json', // Grays Harbor County, WA
+  53063: '/data/orgs-spokane.json', // Spokane County, WA
+  53067: '/data/orgs-thurston.json', // Thurston County, WA
+  53061: '/data/orgs-snohomish.json', // Snohomish County, WA
 };
 
 const orgPromises = new Map();

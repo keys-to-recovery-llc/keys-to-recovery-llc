@@ -1,0 +1,120 @@
+// Generalized county org merge — same gate and normalization as the Pierce /
+// Grays Harbor merges (merge-pierce-orgs.mjs, merge-grays-harbor-orgs.mjs).
+//
+// Usage: node scripts/merge-county-orgs.mjs <slug>
+// Configs live in COUNTIES below; the expected ready count is a hard guard —
+// a mismatch aborts rather than shipping a silent partial county.
+// Only status="ready" records ship; batch-programs.json wins EIN dedupe;
+// EIN-less program/system records are kept (dedupe on name+city); the runtime
+// gate (src/data/orgs.js publishableOrgs) still filters vetting CLEAR + the
+// owner EXCLUDED_EINS set.
+
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const COUNTIES = {
+  spokane: { fips: '53063', county: 'Spokane', display: 'Spokane County', state: 'WA', expected: 26 },
+  thurston: { fips: '53067', county: 'Thurston', display: 'Thurston County', state: 'WA', expected: 20 },
+  snohomish: { fips: '53061', county: 'Snohomish', display: 'Snohomish County', state: 'WA', expected: 24 },
+};
+
+const slug = process.argv[2];
+const cfg = COUNTIES[slug];
+if (!cfg) { console.error(`unknown county slug: ${slug} (known: ${Object.keys(COUNTIES).join(', ')})`); process.exit(1); }
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const srcDir = join(repoRoot, '..', '..', 'directory-data', 'orgs', slug);
+
+const TAXONOMY = new Set([
+  'Treatment & Detox', 'Recovery Housing / Sober Living', 'AA Meetings',
+  'NA Meetings', 'Other Recovery Meetings & Peer Support', 'Crisis & Helplines',
+  'Showers & Hygiene', 'Food Banks & Meals', 'Churches & Faith-Based Support',
+  'Emergency Shelter', 'Rental Assistance', 'Utility Bill Assistance',
+  'Gas Vouchers', 'Bus Tickets & Transportation Help', 'Employment Help',
+  'Reentry Support (post-incarceration)', 'Family Support', 'Veterans Services',
+  'Benefits & ID Help', 'Clothing & Household Goods', 'Legal Aid',
+]);
+
+const files = readdirSync(srcDir).filter((f) => f.startsWith('batch-') && f.endsWith('.json')).sort();
+let total = 0;
+const readyRaw = [];
+const nonCanonicalTags = new Set();
+
+for (const f of files) {
+  const data = JSON.parse(readFileSync(join(srcDir, f), 'utf8'));
+  const records = Array.isArray(data) ? data : data.orgs || data.records || [];
+  total += records.length;
+  for (const r of records) {
+    if (r.status !== 'ready') continue;
+    readyRaw.push({ ...r, _file: f });
+  }
+}
+
+const byEin = new Map();
+const noEin = [];
+const dropped = [];
+for (const r of readyRaw) {
+  const ein = String(r.ein || '').replace(/\D/g, '');
+  if (!ein) { noEin.push(r); continue; }
+  if (!byEin.has(ein)) { byEin.set(ein, r); continue; }
+  const kept = byEin.get(ein);
+  if (r._file === 'batch-programs.json' && kept._file !== 'batch-programs.json') {
+    dropped.push(kept.name); byEin.set(ein, r);
+  } else {
+    dropped.push(r.name);
+  }
+}
+// EIN-less dedupe on normalized name + city
+const seenNoEin = new Set();
+const noEinKept = [];
+for (const r of noEin) {
+  const k = `${String(r.name || '').toUpperCase().replace(/\s+/g, ' ').trim()}|${String(r.city || '').toUpperCase().trim()}`;
+  if (seenNoEin.has(k)) { dropped.push(`${r.name} (no-EIN dupe)`); continue; }
+  seenNoEin.add(k); noEinKept.push(r);
+}
+const deduped = [...byEin.values(), ...noEinKept];
+if (dropped.length) console.log('dedupe dropped:', dropped);
+
+const cleanName = (n) => String(n || '').replace(/\s*\|\s*/g, ' — ').replace(/\s+/g, ' ').trim();
+
+const ready = deduped.map((r) => {
+  const tags = (r.categories || []).filter((t) => {
+    if (!TAXONOMY.has(t)) { nonCanonicalTags.add(t); return false; }
+    return true;
+  });
+  return {
+    name: cleanName(r.name),
+    ein: String(r.ein || '').replace(/\D/g, ''),
+    city: r.city || null,
+    zip: r.zip || null,
+    county: r.county || cfg.county,
+    phone: r.phone || null,
+    url: r.website || null,
+    ...(r.meetingListUrl ? { meetingListUrl: r.meetingListUrl } : {}),
+    services: Array.isArray(r.services) ? r.services : r.services ? [r.services] : [],
+    serves: r.serves || null,
+    tags,
+    vetting: { result: r.vetting?.result || null, checkedAt: r.vetting?.checkedAt || null },
+  };
+});
+
+ready.sort((a, b) => a.name.localeCompare(b.name));
+
+const notClear = ready.filter((o) => o.vetting.result !== 'CLEAR');
+console.log(`batch files: ${files.length} | total records: ${total} | ready gross: ${readyRaw.length} | ready unique: ${ready.length}`);
+console.log(`ready without vetting CLEAR: ${notClear.length}`);
+if (nonCanonicalTags.size) console.log('non-canonical tags dropped:', [...nonCanonicalTags]);
+if (ready.length !== cfg.expected) { console.error(`EXPECTED ${cfg.expected} ready records, got ${ready.length} — aborting`); process.exit(1); }
+if (notClear.length) { console.error('READY RECORDS FAILING THE GATE — aborting'); process.exit(1); }
+
+const out = {
+  county: cfg.display,
+  state: cfg.state,
+  countyFips: cfg.fips,
+  generatedFrom: `directory-data/orgs/${slug}/*.json — IRS BMF roster + org-website enrichment + program-level sweep, VETTING.md gate (status=ready only)`,
+  orgs: ready,
+};
+const dest = join(repoRoot, 'public', 'data', `orgs-${slug}.json`);
+writeFileSync(dest, JSON.stringify(out));
+console.log('wrote', dest, `(${(JSON.stringify(out).length / 1024).toFixed(1)} KB)`);
