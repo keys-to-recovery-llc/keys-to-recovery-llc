@@ -28,7 +28,23 @@ const key = (r) => [norm(r.name), norm(r.name2), norm(r.city), String(r.zip || '
 
 // Operator-evidenced closures (see each state's enrichment report, 2026-10-23).
 const CLOSURES = {
+  CA: [
+    {
+      name: 'San Gorgonio Memorial Hospital', name2: 'Behavioral Health', zip: '92262',
+      note: "This hospital's behavioral health center closed August 31, 2026 (operator's own board resolution, checked 2026-10-23)",
+    },
+  ],
+  OH: [
+    {
+      name: 'Recovery Works', name2: 'Columbus Inpatient', zip: '43235',
+      note: "This location has closed (operator's own location page, checked 2026-10-23)",
+    },
+  ],
   MI: [
+    {
+      name: 'Gilmore Community Healing Centers', name2: '', zip: '49048',
+      note: "Withdrawal management and residential treatment at this location closed in 2025 (operator's own announcement, checked 2026-10-23)",
+    },
     {
       name: 'Pine Rest Christian Mental Hlth Servs', name2: 'Forest Hills Clinic', zip: '49546',
       note: "This location closed December 19, 2025 — services merged into the operator's BRAINS clinic (operator's own notice, checked 2026-10-23)",

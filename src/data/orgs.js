@@ -91,6 +91,24 @@ const COUNTY_ORG_ASSETS = {
   53035: '/data/orgs-kitsap.json', // Kitsap County, WA
   48141: '/data/orgs-tx-el-paso.json', // El Paso County, TX
   17097: '/data/orgs-il-lake.json', // Lake County, IL
+  12095: '/data/orgs-fl-orange.json', // Orange County, FL
+  12057: '/data/orgs-fl-hillsborough.json', // Hillsborough County, FL
+  12031: '/data/orgs-fl-duval.json', // Duval County, FL
+  12103: '/data/orgs-fl-pinellas.json', // Pinellas County, FL
+  13089: '/data/orgs-ga-dekalb.json', // DeKalb County, GA
+  13063: '/data/orgs-ga-clayton.json', // Clayton County, GA
+  13051: '/data/orgs-ga-chatham.json', // Chatham County, GA
+  42045: '/data/orgs-pa-delaware.json', // Delaware County, PA
+  42017: '/data/orgs-pa-bucks.json', // Bucks County, PA
+  42029: '/data/orgs-pa-chester.json', // Chester County, PA
+  42071: '/data/orgs-pa-lancaster.json', // Lancaster County, PA
+  37081: '/data/orgs-nc-guilford.json', // Guilford County, NC
+  37067: '/data/orgs-nc-forsyth.json', // Forsyth County, NC
+  37063: '/data/orgs-nc-durham.json', // Durham County, NC
+  37051: '/data/orgs-nc-cumberland.json', // Cumberland County, NC
+  36059: '/data/orgs-ny-nassau.json', // Nassau County, NY
+  36103: '/data/orgs-ny-suffolk.json', // Suffolk County, NY
+  36119: '/data/orgs-ny-westchester.json', // Westchester County, NY
 };
 
 const orgPromises = new Map();
