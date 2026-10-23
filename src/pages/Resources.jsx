@@ -5,6 +5,8 @@ import { Search, BookOpen, Video, FileText, Headphones, ExternalLink, ArrowRight
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import LocalityFinder from '@/components/LocalityFinder';
+import { resourceArticles } from '@/data/resourceArticles';
 
 const resources = [
   // Beginner
@@ -53,6 +55,7 @@ export default function ResourcesPage() {
   const [difficulty, setDifficulty] = useState('All');
 
   const filtered = useMemo(() => resources.filter(r => {
+    if (r.id === 2) return false; // The 12 Steps summary leads the page (featured block below)
     const matchSearch = r.title.toLowerCase().includes(search.toLowerCase()) || r.description.toLowerCase().includes(search.toLowerCase());
     const matchCat = category === 'All' || r.category === category;
     const matchType = type === 'All' || r.type === type;
@@ -92,6 +95,36 @@ export default function ResourcesPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Featured: The 12 Steps — summary first (owner directive) */}
+      <section className="px-6 py-12 border-b border-[#d4a574]/10">
+        <div className="max-w-7xl mx-auto">
+          <span className="text-[#d4a574] font-medium tracking-widest text-xs uppercase">Start here · 12-Step</span>
+          <h2 className="text-3xl md:text-4xl font-light text-white mt-3 mb-4">
+            The 12 Steps <span className="font-semibold text-[#d4a574]">Explained</span>
+          </h2>
+          <p className="text-white/60 leading-relaxed max-w-3xl mb-8">
+            {resourceArticles['the-12-steps-explained'].lede}
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+            {resourceArticles['the-12-steps-explained'].steps.map((s) => (
+              <div key={s.title} className="border border-white/10 rounded-xl p-4 bg-[#0d0d00]">
+                <p className="text-[#d4a574] text-xs font-semibold uppercase tracking-widest mb-1.5">{s.title}</p>
+                <p className="text-white/70 text-sm leading-relaxed">{s.text}</p>
+              </div>
+            ))}
+          </div>
+          <Link
+            to="/Resources/the-12-steps-explained"
+            className="inline-flex items-center gap-1 text-[#d4a574] font-medium hover:underline"
+          >
+            Read the full guide <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Find help near you — state/county/city selections + plain-language search (owner directive) */}
+      <LocalityFinder />
 
       {/* Search & Filters */}
       <section className="sticky top-[80px] z-30 bg-black/95 backdrop-blur border-b border-[#d4a574]/10 px-6 py-4">
