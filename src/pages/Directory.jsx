@@ -12,6 +12,7 @@ import {
 import { stateGateways, stateGatewayByAbbr } from '@/data/states';
 import { loadGazetteer, searchLocalities, orgsForCounty } from '@/data/gazetteer';
 import { locatorUrl, isPrefilled } from '@/data/locators';
+import { facilitiesForLocality, filterFacilities, groupFacilitiesByLevel, FACILITY_FILTERS } from '@/data/facilities';
 
 const ALL_STATES_AND_TERRITORIES = [...US_STATES, ...TERRITORIES];
 
@@ -85,6 +86,83 @@ function CountyOrgsSection({ locality }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// Licensed treatment facilities (SAMHSA roster layer) — INTEGRATION SEAM.
+// Data arrives per-state from directory-data/facilities/<ST>.json after the
+// supervisor's provenance + QC handover (see src/data/facilities.js); until
+// then facilitiesForLocality() returns [] and this section renders nothing.
+// When data is present: listed by level of care, filterable by
+// Detox / Residential / Outpatient / MAT / Medicaid.
+function FacilitiesSection({ locality }) {
+  const [activeFilters, setActiveFilters] = useState([]);
+  const all = facilitiesForLocality(locality);
+  if (!locality || all.length === 0) return null;
+  const toggle = (key) =>
+    setActiveFilters((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  const filtered = filterFacilities(all, activeFilters);
+  const groups = groupFacilitiesByLevel(filtered);
+  return (
+    <div className="mt-8">
+      <h4 className="text-white font-semibold mb-3">
+        Licensed treatment facilities near {locality.city || locality.county}
+      </h4>
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide mb-4">
+        <Filter className="h-4 w-4 text-[#d4a574] flex-shrink-0" />
+        {FACILITY_FILTERS.map((f) => (
+          <FilterPill
+            key={f.key}
+            value={f.label}
+            current={activeFilters.includes(f.key) ? f.label : ''}
+            onChange={() => toggle(f.key)}
+          />
+        ))}
+        <span className="text-white/40 text-xs flex-shrink-0">
+          {filtered.length} of {all.length} facilities
+        </span>
+      </div>
+      {groups.length === 0 ? (
+        <p className="text-white/40 text-sm">No facilities match those filters here.</p>
+      ) : (
+        groups.map((g) => (
+          <div key={g.key} className="mb-4">
+            <p className="text-[#d4a574]/80 text-xs uppercase tracking-widest mb-2">{g.label}</p>
+            <div className="grid md:grid-cols-2 gap-3">
+              {g.facilities.map((f) => (
+                <div key={`${g.key}-${f.name}-${f.zip || ''}`} className="border border-white/10 rounded-xl p-4 bg-black/40">
+                  <p className="text-white font-medium">{f.name}</p>
+                  {(f.city || f.zip) && (
+                    <p className="text-white/40 text-sm mt-1">
+                      {[f.city, f.state, f.zip].filter(Boolean).join(', ')}
+                    </p>
+                  )}
+                  {(f.services || []).length > 0 && (
+                    <p className="text-white/50 text-sm mt-1">{f.services.join(' · ')}</p>
+                  )}
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {f.mat && (
+                      <span className="text-xs px-2 py-0.5 rounded-full border bg-[#d4a574]/10 text-[#d4a574] border-[#d4a574]/30">MAT</span>
+                    )}
+                    {(f.payment || []).map((p) => (
+                      <span key={p} className="text-xs px-2 py-0.5 rounded-full border bg-white/5 text-white/50 border-white/10">{p}</span>
+                    ))}
+                  </div>
+                  <div className="flex gap-4 mt-2">
+                    {f.url && <ExtLink href={f.url}>Website</ExtLink>}
+                    {f.phone && (
+                      <a href={`tel:${f.phone}`} className="inline-flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline">
+                        <Phone className="h-3.5 w-3.5" /> {f.phone}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }
@@ -395,6 +473,8 @@ export default function DirectoryPage() {
                 </div>
 
                 <CountyOrgsSection locality={locality} />
+
+                <FacilitiesSection locality={locality} />
               </div>
             </motion.div>
           )}

@@ -581,3 +581,10 @@ agent** — supervisor merges/deploys after QC.
   gazetteer 33,791 ZIPs. Build passes; dist greps base44 = 0,
   supabase.co = 0; preview /Directory 200 with locality spot checks
   (Tacoma WA 98402, Sheridan WY 82801, Miami FL 33101) passing.
+- **Facility layer (seam only, 2026-10-22)**: the SAMHSA licensed-facility
+  roster (per-state JSON at `directory-data/facilities/<ST>.json`, counts in
+  `facilities-stats.json`) plugs into `src/data/facilities.js` /
+  `FacilitiesSection` in the locality view — listed by level of care,
+  filterable by Detox / Residential / Outpatient / MAT / Medicaid. No data
+  is imported yet; the section renders nothing until the supervisor's
+  provenance + QC handover.
