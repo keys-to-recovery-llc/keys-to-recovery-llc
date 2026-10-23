@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react';
+import { EXCLUDED_EINS, normalizeEin } from './orgs';
+
+// Owner-excluded organizations never render in ANY tier — including this
+// registry skeleton (Bart directive 2026-10-23: Share & Care House +
+// Homeward Bound removed from the whole site, not just the verified layer).
+const withoutExcluded = (orgs) => (orgs || []).filter((o) => !EXCLUDED_EINS.has(normalizeEin(o.ein)));
 
 // IRS REGISTRY TIER — national organization skeleton.
 //
@@ -43,13 +49,14 @@ export function loadCountyRegistry(state, county) {
           const ent = counties[hitKey];
           if (!ent || !ent.file) return { orgs: [], presentation: idx.presentation || null, countyCount: 0 };
           const shard = await fetchJson(`/data/orgs/${state}/${ent.file}`);
+          const kept = withoutExcluded(shard.orgs || []);
           return {
-            orgs: shard.orgs || [],
+            orgs: kept,
             presentation: idx.presentation || null,
-            countyCount: ent.count || (shard.orgs || []).length,
+            countyCount: (ent.count || (shard.orgs || []).length) - ((shard.orgs || []).length - kept.length),
           };
         }
-        const arr = Array.isArray(counties[hitKey]) ? counties[hitKey] : [];
+        const arr = withoutExcluded(Array.isArray(counties[hitKey]) ? counties[hitKey] : []);
         return { orgs: arr, presentation: idx.presentation || null, countyCount: arr.length };
       })().catch(() => null),
     );
