@@ -346,7 +346,9 @@ export function LocalityPanel({ locality, onReset, focus }) {
       <div className="border border-[#d4a574]/30 rounded-2xl p-6 bg-[#0d0d00]">
         <div className="flex flex-wrap items-baseline justify-between gap-3 mb-1">
           <h3 className="text-xl font-semibold text-white">
-            {locality.city ? `${locality.city}, ` : ''}{stateName}
+            {locality.match === 'county'
+              ? `${locality.county}, ${stateName}`
+              : `${locality.city ? `${locality.city}, ` : ''}${stateName}`}
           </h3>
           {onReset && (
             <button onClick={onReset} className="text-[#d4a574] text-sm hover:underline">
@@ -356,7 +358,7 @@ export function LocalityPanel({ locality, onReset, focus }) {
         </div>
         <p className="text-white/50 text-sm mb-6">
           {locality.county}
-          {locality.zip ? ` · ZIP ${locality.zip}` : ''}
+          {locality.match !== 'county' && locality.zip ? ` · ZIP ${locality.zip}` : ''}
           {locality.match !== 'zip' && locality.zipCount ? ` · ${locality.zipCount} ZIP codes in this ${locality.match}` : ''}
         </p>
 
