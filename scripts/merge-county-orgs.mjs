@@ -34,6 +34,13 @@ const COUNTIES = {
   cobb: { fips: '13067', county: 'Cobb', display: 'Cobb County', state: 'GA', expected: 9 },
   fulton: { fips: '13121', county: 'Fulton', display: 'Fulton County', state: 'GA', expected: 11 },
   gwinnett: { fips: '13135', county: 'Gwinnett', display: 'Gwinnett County', state: 'GA', expected: 14 },
+
+  'mi-wayne': { fips: '26163', county: 'Wayne', display: 'Wayne County', state: 'MI', expected: 14 },
+  'oh-franklin': { fips: '39049', county: 'Franklin', display: 'Franklin County', state: 'OH', expected: 12 },
+  'tn-davidson': { fips: '47037', county: 'Davidson', display: 'Davidson County', state: 'TN', expected: 42 },
+  'tx-dallas': { fips: '48113', county: 'Dallas', display: 'Dallas County', state: 'TX', expected: 10 },
+  'tx-harris': { fips: '48201', county: 'Harris', display: 'Harris County', state: 'TX', expected: 19 },
+  'tx-tarrant': { fips: '48439', county: 'Tarrant', display: 'Tarrant County', state: 'TX', expected: 14 },
 };
 
 // Known near-miss tag spellings normalized to the canonical taxonomy.

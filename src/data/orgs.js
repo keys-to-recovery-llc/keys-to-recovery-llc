@@ -61,6 +61,12 @@ const COUNTY_ORG_ASSETS = {
   13067: '/data/orgs-cobb.json', // Cobb County, GA
   13121: '/data/orgs-fulton.json', // Fulton County, GA
   13135: '/data/orgs-gwinnett.json', // Gwinnett County, GA
+  39049: '/data/orgs-oh-franklin.json', // Franklin County, OH
+  47037: '/data/orgs-tn-davidson.json', // Davidson County, TN
+  48113: '/data/orgs-tx-dallas.json', // Dallas County, TX
+  26163: '/data/orgs-mi-wayne.json', // Wayne County, MI
+  48439: '/data/orgs-tx-tarrant.json', // Tarrant County, TX
+  48201: '/data/orgs-tx-harris.json', // Harris County, TX
 };
 
 const orgPromises = new Map();
