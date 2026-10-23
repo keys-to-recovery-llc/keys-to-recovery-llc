@@ -109,7 +109,7 @@ function CountyOrgsList({ locality, orgs, focusTags }) {
           <p className="text-[#d4a574]/80 text-xs uppercase tracking-widest mb-2">{g.category}</p>
           <div className="grid md:grid-cols-2 gap-3">
             {g.orgs.map((o) => (
-              <div key={o.ein || o.name} className="border border-white/10 rounded-xl p-4 bg-black/40">
+              <div key={`${o.ein || 'noein'}-${o.name}`} className="border border-white/10 rounded-xl p-4 bg-black/40">
                 <p className="text-white font-medium">{o.name}</p>
                 {o.city && (
                   <p className="text-white/40 text-sm mt-0.5">{o.city}{o.zip ? `, ${o.zip}` : ''}</p>
