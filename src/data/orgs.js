@@ -31,7 +31,9 @@ import { useEffect, useState } from 'react';
 // owner rules strict on affiliations, the supervisor adds '916064184' to
 // this set — one line here, no data change needed. Do not add it otherwise.
 // ---------------------------------------------------------------------------
-export const EXCLUDED_EINS = new Set([]);
+export const EXCLUDED_EINS = new Set([
+  '911741654', // SHARE & CARE HOUSE — removed 2026-10-23 on Bart's direct order (first-hand knowledge: program took its funding and spent it on itself; owner does not want it on the site)
+]);
 
 // countyFips -> lazy asset URL. Counties without an asset have no org layer
 // yet and the locality view renders no org section (gateways carry them).
