@@ -30,10 +30,15 @@ const key = (r) => [norm(r.name), norm(r.name2), norm(r.city), String(r.zip || '
 const CLOSURES = {
   MI: [
     {
+      name: 'Pine Rest Christian Mental Hlth Servs', name2: 'Forest Hills Clinic', zip: '49546',
+      note: "This location closed December 19, 2025 — services merged into the operator's BRAINS clinic (operator's own notice, checked 2026-10-23)",
+    },
+    {
       name: 'Kalamazoo Probation', name2: 'Enhancement Program', zip: '49022',
       note: "Closure announced by the operator — this site's residential operations close effective March 6, 2026 (operator's closure letter, checked 2026-10-23)",
     },
   ],
+  MI_EXTRA: [],
   IL: [
     {
       name: 'Wayward DUI Counseling Inc', name2: '', zip: '60102',

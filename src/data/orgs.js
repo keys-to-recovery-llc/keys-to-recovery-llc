@@ -89,6 +89,8 @@ const COUNTY_ORG_ASSETS = {
   53077: '/data/orgs-yakima.json', // Yakima County, WA
   53073: '/data/orgs-whatcom.json', // Whatcom County, WA
   53035: '/data/orgs-kitsap.json', // Kitsap County, WA
+  48141: '/data/orgs-tx-el-paso.json', // El Paso County, TX
+  17097: '/data/orgs-il-lake.json', // Lake County, IL
 };
 
 const orgPromises = new Map();

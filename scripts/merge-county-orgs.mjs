@@ -58,6 +58,8 @@ const COUNTIES = {
   'kitsap': { fips: '53035', county: 'Kitsap', display: 'Kitsap County', state: 'WA', expected: 21 },
   'whatcom': { fips: '53073', county: 'Whatcom', display: 'Whatcom County', state: 'WA', expected: 14 },
   'yakima': { fips: '53077', county: 'Yakima', display: 'Yakima County', state: 'WA', expected: 13 },
+  'il-lake': { fips: '17097', county: 'Lake', display: 'Lake County', state: 'IL', expected: 16 },
+  'tx-el-paso': { fips: '48141', county: 'El Paso', display: 'El Paso County', state: 'TX', expected: 17 },
 };
 
 // Known near-miss tag spellings normalized to the canonical taxonomy.

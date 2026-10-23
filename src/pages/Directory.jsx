@@ -85,7 +85,7 @@ export default function DirectoryPage() {
               {facStats && (
                 <> · {facStats.uniqueFacilities.toLocaleString()} licensed treatment facilities (SAMHSA {facStats.dataYear} survey)</>
               )}
-              <> · 1,021 verified local organizations across 50 counties · 23,205 NA meetings · 19,471 community health centers</>
+              <> · 1,054 verified local organizations across 52 counties · 23,205 NA meetings · 19,471 community health centers</>
             </p>
           </motion.div>
         </div>
