@@ -17,7 +17,27 @@ const COUNTIES = {
   spokane: { fips: '53063', county: 'Spokane', display: 'Spokane County', state: 'WA', expected: 26 },
   thurston: { fips: '53067', county: 'Thurston', display: 'Thurston County', state: 'WA', expected: 20 },
   snohomish: { fips: '53061', county: 'Snohomish', display: 'Snohomish County', state: 'WA', expected: 24 },
+  clackamas: { fips: '41005', county: 'Clackamas', display: 'Clackamas County', state: 'OR', expected: 13 },
+  multnomah: { fips: '41051', county: 'Multnomah', display: 'Multnomah County', state: 'OR', expected: 26 },
+  'washington-or': { fips: '41067', county: 'Washington', display: 'Washington County', state: 'OR', expected: 12 },
+  maricopa: { fips: '04013', county: 'Maricopa', display: 'Maricopa County', state: 'AZ', expected: 21 },
+  pima: { fips: '04019', county: 'Pima', display: 'Pima County', state: 'AZ', expected: 32 },
+  'san-diego': { fips: '06073', county: 'San Diego', display: 'San Diego County', state: 'CA', expected: 23 },
+  'il-cook': { fips: '17031', county: 'Cook', display: 'Cook County', state: 'IL', expected: 14 },
+  'il-dupage': { fips: '17043', county: 'DuPage', display: 'DuPage County', state: 'IL', expected: 12 },
+  'oh-cuyahoga': { fips: '39035', county: 'Cuyahoga', display: 'Cuyahoga County', state: 'OH', expected: 14 },
+  'oh-hamilton': { fips: '39061', county: 'Hamilton', display: 'Hamilton County', state: 'OH', expected: 15 },
+  'mi-oakland': { fips: '26125', county: 'Oakland', display: 'Oakland County', state: 'MI', expected: 25 },
+  'mi-macomb': { fips: '26099', county: 'Macomb', display: 'Macomb County', state: 'MI', expected: 11 },
+  'tn-shelby': { fips: '47157', county: 'Shelby', display: 'Shelby County', state: 'TN', expected: 17 },
+  'tn-knox': { fips: '47093', county: 'Knox', display: 'Knox County', state: 'TN', expected: 17 },
+  cobb: { fips: '13067', county: 'Cobb', display: 'Cobb County', state: 'GA', expected: 9 },
+  fulton: { fips: '13121', county: 'Fulton', display: 'Fulton County', state: 'GA', expected: 11 },
+  gwinnett: { fips: '13135', county: 'Gwinnett', display: 'Gwinnett County', state: 'GA', expected: 14 },
 };
+
+// Known near-miss tag spellings normalized to the canonical taxonomy.
+const TAG_ALIASES = { 'Reentry Support': 'Reentry Support (post-incarceration)' };
 
 const slug = process.argv[2];
 const cfg = COUNTIES[slug];
@@ -79,7 +99,8 @@ if (dropped.length) console.log('dedupe dropped:', dropped);
 const cleanName = (n) => String(n || '').replace(/\s*\|\s*/g, ' — ').replace(/\s+/g, ' ').trim();
 
 const ready = deduped.map((r) => {
-  const tags = (r.categories || []).filter((t) => {
+  const rawCats = Array.isArray(r.categories) ? r.categories : r.categories ? [r.categories] : [];
+  const tags = rawCats.map((t) => TAG_ALIASES[t] || t).filter((t) => {
     if (!TAXONOMY.has(t)) { nonCanonicalTags.add(t); return false; }
     return true;
   });

@@ -44,6 +44,23 @@ const COUNTY_ORG_ASSETS = {
   53063: '/data/orgs-spokane.json', // Spokane County, WA
   53067: '/data/orgs-thurston.json', // Thurston County, WA
   53061: '/data/orgs-snohomish.json', // Snohomish County, WA
+  41005: '/data/orgs-clackamas.json', // Clackamas County, OR
+  41051: '/data/orgs-multnomah.json', // Multnomah County, OR
+  41067: '/data/orgs-washington-or.json', // Washington County, OR
+  '04013': '/data/orgs-maricopa.json', // Maricopa County, AZ
+  '04019': '/data/orgs-pima.json', // Pima County, AZ
+  '06073': '/data/orgs-san-diego.json', // San Diego County, CA
+  17031: '/data/orgs-il-cook.json', // Cook County, IL
+  17043: '/data/orgs-il-dupage.json', // DuPage County, IL
+  39035: '/data/orgs-oh-cuyahoga.json', // Cuyahoga County, OH
+  39061: '/data/orgs-oh-hamilton.json', // Hamilton County, OH
+  26125: '/data/orgs-mi-oakland.json', // Oakland County, MI
+  26099: '/data/orgs-mi-macomb.json', // Macomb County, MI
+  47157: '/data/orgs-tn-shelby.json', // Shelby County, TN
+  47093: '/data/orgs-tn-knox.json', // Knox County, TN
+  13067: '/data/orgs-cobb.json', // Cobb County, GA
+  13121: '/data/orgs-fulton.json', // Fulton County, GA
+  13135: '/data/orgs-gwinnett.json', // Gwinnett County, GA
 };
 
 const orgPromises = new Map();
