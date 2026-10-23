@@ -12,6 +12,8 @@ import { TAXONOMY, nationalEntries, US_STATES, TERRITORIES } from '@/data/direct
 import { stateGatewayByAbbr } from '@/data/states';
 import { useCountyOrgs } from '@/data/orgs';
 import { useCountyRegistry } from '@/data/registry';
+import { useNaMeetings, useAaMeetings, fmtTime, AA_DAYS } from '@/data/meetings';
+import { useHealthCenters } from '@/data/health-centers';
 import { locatorUrl, isPrefilled } from '@/data/locators';
 import { useFacilitiesForLocality, filterFacilities, groupFacilitiesByLevel, FACILITY_FILTERS } from '@/data/facilities';
 
@@ -333,6 +335,137 @@ export function StateGatewaySet({ gateway, stateName }) {
 }
 
 
+// RECOVERY MEETINGS — real schedules for the locality's county.
+// NA: BMLT open meeting network (nationwide). AA: local A.A. service
+// entities' public Meeting Guide feeds (partial coverage — rendered only
+// where a feed exists, and labeled as feed data). Schedules change; the
+// confirm-before-you-go note always renders with the lists.
+const MEETING_CAP = 15;
+export function MeetingsSection({ locality }) {
+  const na = useNaMeetings(locality?.state, locality?.county);
+  const aa = useAaMeetings(locality?.countyFips);
+  if (!locality) return null;
+  if (na.loading || aa.loading) {
+    return (
+      <div className="mt-8">
+        <h4 className="text-white font-semibold mb-3">Recovery meetings in {locality.county}</h4>
+        <p className="text-white/40 text-sm">Loading meeting schedules…</p>
+      </div>
+    );
+  }
+  if (na.meetings.length === 0 && aa.meetings.length === 0) return null;
+  return (
+    <div className="mt-8">
+      <h4 className="text-white font-semibold mb-1">Recovery meetings in {locality.county}</h4>
+      <p className="text-white/50 text-sm mb-4">
+        Schedules change — confirm the day and time with the meeting&apos;s service body before you go.
+      </p>
+      {na.meetings.length > 0 && (
+        <div className="mb-6">
+          <p className="text-[#d4a574] text-sm font-semibold mb-2">
+            Narcotics Anonymous — {na.meetings.length.toLocaleString()} meetings in this county
+          </p>
+          <div className="space-y-2">
+            {na.meetings.slice(0, MEETING_CAP).map((m, i) => (
+              <div key={`na-${i}`} className="border border-white/10 rounded-xl p-3 bg-black/40 text-sm">
+                <span className="text-white font-medium">{m.weekday} {fmtTime(m.start_time)}</span>
+                <span className="text-white/80"> — {m.name}</span>
+                <span className="block text-white/40 text-xs mt-0.5">
+                  {m.attendance === 'virtual' || (!m.in_person && m.attendance !== 'in-person')
+                    ? 'Online meeting'
+                    : [m.location_name, m.street, m.city].filter(Boolean).join(', ') || 'In person'}
+                  {m.service_body ? ` · ${m.service_body}` : ''}
+                </span>
+              </div>
+            ))}
+          </div>
+          {na.meetings.length > MEETING_CAP && (
+            <p className="text-white/40 text-xs mt-2">
+              Showing {MEETING_CAP} of {na.meetings.length.toLocaleString()} — the full, always-current NA
+              schedule for this area is in the NA meeting search linked in the national locators above.
+            </p>
+          )}
+        </div>
+      )}
+      {aa.meetings.length > 0 && (
+        <div>
+          <p className="text-[#d4a574] text-sm font-semibold mb-2">
+            Alcoholics Anonymous — {aa.meetings.length.toLocaleString()} meetings in this county
+          </p>
+          <div className="space-y-2">
+            {aa.meetings.slice(0, MEETING_CAP).map((m, i) => (
+              <div key={`aa-${i}`} className="border border-white/10 rounded-xl p-3 bg-black/40 text-sm">
+                <span className="text-white font-medium">
+                  {AA_DAYS[m.day] || ''} {m.time_formatted || fmtTime(m.time)}
+                </span>
+                <span className="text-white/80"> — {m.name}</span>
+                <span className="block text-white/40 text-xs mt-0.5">
+                  {m.conference_url && !m.formatted_address
+                    ? 'Online meeting'
+                    : [m.location, m.formatted_address].filter(Boolean).join(' — ') || 'See the local A.A. meeting list'}
+                </span>
+              </div>
+            ))}
+          </div>
+          {aa.meetings.length > MEETING_CAP && (
+            <p className="text-white/40 text-xs mt-2">
+              Showing {MEETING_CAP} of {aa.meetings.length.toLocaleString()} — from the local A.A. service
+              entity&apos;s public Meeting Guide feed.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// HEALTH CENTERS — HRSA federally funded clinic sites in the county
+// (sliding-scale primary care). Federal public-domain data; the source
+// line always renders with the list.
+const HEALTH_CAP = 15;
+export function HealthCentersSection({ locality }) {
+  const { sites, loading } = useHealthCenters(locality?.state, locality?.countyFips, locality?.county);
+  if (!locality || loading) return null;
+  if (!sites || sites.length === 0) return null;
+  return (
+    <div className="mt-8">
+      <h4 className="text-white font-semibold mb-1">
+        Health centers in {locality.county} — {sites.length.toLocaleString()}
+      </h4>
+      <p className="text-white/50 text-sm mb-4">
+        Federally funded health centers provide primary care on a sliding scale based on income, regardless
+        of ability to pay. Data: HRSA (U.S. Health Resources &amp; Services Administration), retrieved
+        2026-10-22.
+      </p>
+      <div className="grid md:grid-cols-2 gap-3">
+        {sites.slice(0, HEALTH_CAP).map((s, i) => (
+          <div key={`hc-${i}`} className="border border-white/10 rounded-xl p-4 bg-black/40">
+            <p className="text-white font-medium leading-snug mb-1">{s.name}</p>
+            <p className="text-white/40 text-xs mb-1">
+              {[s.address, s.city, s.zip].filter(Boolean).join(', ')}
+            </p>
+            {s.phone && (
+              <p className="text-white/60 text-sm inline-flex items-center gap-1">
+                <Phone className="h-3.5 w-3.5" /> {s.phone}
+              </p>
+            )}
+            {s.locationType && s.locationType !== 'Permanent' && (
+              <span className="ml-2 text-[11px] uppercase tracking-wider text-white/40 border border-white/15 rounded-full px-2 py-0.5">
+                {s.locationType}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+      {sites.length > HEALTH_CAP && (
+        <p className="text-white/40 text-xs mt-3">
+          Showing {HEALTH_CAP} of {sites.length.toLocaleString()} health center sites in this county.
+        </p>
+      )}
+    </div>
+  );
+}
+
 // IRS REGISTRY TIER — every registered nonprofit in the county, straight
 // from IRS federal records (src/data/registry.js). Deliberately rendered as
 // a lesser tier than the verified listings: no service claims, no vetting
@@ -457,6 +590,8 @@ export function LocalityPanel({ locality, onReset, focus }) {
 
         <CountyOrgsSection locality={locality} onlyTags={focus?.tags} />
 
+        <MeetingsSection locality={locality} />
+
         <RegistrySection locality={locality} />
 
         <FacilitiesSection
@@ -464,6 +599,8 @@ export function LocalityPanel({ locality, onReset, focus }) {
           locality={locality}
           initialFilters={focus?.facilityFilters}
         />
+
+        <HealthCentersSection locality={locality} />
       </div>
     </motion.div>
   );
