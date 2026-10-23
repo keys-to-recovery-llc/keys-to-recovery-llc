@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, ExternalLink, Phone, MapPin, AlertTriangle, Filter,
@@ -13,7 +13,7 @@ import { stateGateways, stateGatewayByAbbr } from '@/data/states';
 import { loadGazetteer, searchLocalities } from '@/data/gazetteer';
 import { useCountyOrgs } from '@/data/orgs';
 import { locatorUrl, isPrefilled } from '@/data/locators';
-import { facilitiesForLocality, filterFacilities, groupFacilitiesByLevel, FACILITY_FILTERS } from '@/data/facilities';
+import { useFacilitiesForLocality, filterFacilities, groupFacilitiesByLevel, FACILITY_FILTERS } from '@/data/facilities';
 
 const ALL_STATES_AND_TERRITORIES = [...US_STATES, ...TERRITORIES];
 
@@ -118,16 +118,28 @@ function CountyOrgsSection({ locality }) {
   );
 }
 
-// Licensed treatment facilities (SAMHSA roster layer) — INTEGRATION SEAM.
-// Data arrives per-state from directory-data/facilities/<ST>.json after the
-// supervisor's provenance + QC handover (see src/data/facilities.js); until
-// then facilitiesForLocality() returns [] and this section renders nothing.
-// When data is present: listed by level of care, filterable by
-// Detox / Residential / Outpatient / MAT / Medicaid.
+// Licensed treatment facilities (SAMHSA roster layer).
+// Data: SAMHSA's 2025 National Directories (2024 N-SUMHSS survey), slimmed
+// per state and lazy-loaded by useFacilitiesForLocality() — see
+// src/data/facilities.js and directory-data/facilities/source/PROVENANCE.md.
+// Listed by level of care, filterable by Detox / Residential / Outpatient /
+// Hospital inpatient / MAT / Medicaid. States with no directory facilities
+// (e.g. American Samoa) render nothing.
 function FacilitiesSection({ locality }) {
   const [activeFilters, setActiveFilters] = useState([]);
-  const all = facilitiesForLocality(locality);
-  if (!locality || all.length === 0) return null;
+  const { facilities: all, loading } = useFacilitiesForLocality(locality);
+  if (!locality) return null;
+  if (loading) {
+    return (
+      <div className="mt-8">
+        <h4 className="text-white font-semibold mb-3">
+          Licensed treatment facilities near {locality.city || locality.county}
+        </h4>
+        <p className="text-white/40 text-sm">Loading licensed facilities…</p>
+      </div>
+    );
+  }
+  if (all.length === 0) return null;
   const toggle = (key) =>
     setActiveFilters((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
   const filtered = filterFacilities(all, activeFilters);
@@ -159,8 +171,12 @@ function FacilitiesSection({ locality }) {
             <p className="text-[#d4a574]/80 text-xs uppercase tracking-widest mb-2">{g.label}</p>
             <div className="grid md:grid-cols-2 gap-3">
               {g.facilities.map((f) => (
-                <div key={`${g.key}-${f.name}-${f.zip || ''}`} className="border border-white/10 rounded-xl p-4 bg-black/40">
+                <div key={`${g.key}-${f.name}-${f.zip || ''}-${f.phone || ''}`} className="border border-white/10 rounded-xl p-4 bg-black/40">
                   <p className="text-white font-medium">{f.name}</p>
+                  {f.name2 && f.name2 !== f.name && (
+                    <p className="text-white/60 text-sm">{f.name2}</p>
+                  )}
+                  {f.address && <p className="text-white/40 text-sm mt-1">{f.address}</p>}
                   {(f.city || f.zip) && (
                     <p className="text-white/40 text-sm mt-1">
                       {[f.city, f.state, f.zip].filter(Boolean).join(', ')}
@@ -185,12 +201,28 @@ function FacilitiesSection({ locality }) {
                       </a>
                     )}
                   </div>
+                  {(f.intakePhones || []).length > 0 && (
+                    <p className="text-white/40 text-xs mt-2">Intake: {f.intakePhones.join(' · ')}</p>
+                  )}
+                  {(f.licenseSummary || []).length > 0 && (
+                    <p className="text-white/30 text-xs mt-1">Licensed / accredited: {f.licenseSummary.join(' · ')}</p>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         ))
       )}
+      <p className="text-white/30 text-xs leading-relaxed mt-2">
+        Facility data: SAMHSA&apos;s 2024 National Substance Use and Mental Health
+        Services Survey (N-SUMHSS), published in the 2025 National Directories of
+        treatment facilities. Listed facilities were licensed, certified, or
+        otherwise approved by their state agency as of that survey — a dated
+        snapshot, not a live license check — and services may have changed, so
+        please verify details when you contact a facility. The published
+        directories do not include facility websites, so phone is the fastest
+        way to reach them.
+      </p>
     </div>
   );
 }
@@ -295,6 +327,17 @@ export default function DirectoryPage() {
   const [stateSearch, setStateSearch] = useState('');
   const [stateSelect, setStateSelect] = useState('All');
 
+  // Facility roster counts (SAMHSA stats, lazy-loaded for the hero line)
+  const [facStats, setFacStats] = useState(null);
+  useEffect(() => {
+    let live = true;
+    fetch('/data/facilities-stats.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((s) => { if (live) setFacStats(s); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, []);
+
   const filteredNational = useMemo(
     () =>
       nationalCategories
@@ -369,6 +412,9 @@ export default function DirectoryPage() {
             <p className="text-white/40 text-sm mt-4">
               {crisisResources.length} crisis resources · {nationalEntries.length} national locators ·{' '}
               {stateGateways.length} of {ALL_STATES_AND_TERRITORIES.length} states &amp; territories with verified gateways
+              {facStats && (
+                <> · {facStats.uniqueFacilities.toLocaleString()} licensed treatment facilities (SAMHSA {facStats.dataYear} survey)</>
+              )}
             </p>
           </motion.div>
         </div>
@@ -683,11 +729,14 @@ export default function DirectoryPage() {
       <section className="px-6 pb-16">
         <div className="max-w-7xl mx-auto border border-white/10 rounded-2xl p-6 bg-white/[0.02]">
           <p className="text-white/40 text-sm leading-relaxed">
-            About this directory: it lists crisis lines, national locators, and official
-            state gateways — not individual facilities, because facility details change
-            faster than any directory can re-verify them. Every link here was checked
-            against the organization&apos;s own site when the directory was built. If a
-            link has gone stale, please tell us through the Contact page.
+            About this directory: it lists crisis lines, national locators, official
+            state gateways, and licensed treatment facilities from SAMHSA&apos;s 2024
+            facility survey (published in the 2025 National Directories). Facility
+            services and licensure are as reported in that survey and may have
+            changed — verify when you contact a facility. Every gateway and
+            organization link here was checked against the organization&apos;s own
+            site when the directory was built. If a link has gone stale, please tell
+            us through the Contact page.
           </p>
         </div>
       </section>
