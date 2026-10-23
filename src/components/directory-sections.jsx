@@ -11,6 +11,7 @@ import { ExternalLink, Phone, Filter, Home, Users, Landmark, HeartHandshake } fr
 import { TAXONOMY, nationalEntries, US_STATES, TERRITORIES } from '@/data/directory';
 import { stateGatewayByAbbr } from '@/data/states';
 import { useCountyOrgs } from '@/data/orgs';
+import { useCountyRegistry } from '@/data/registry';
 import { locatorUrl, isPrefilled } from '@/data/locators';
 import { useFacilitiesForLocality, filterFacilities, groupFacilitiesByLevel, FACILITY_FILTERS } from '@/data/facilities';
 
@@ -332,6 +333,74 @@ export function StateGatewaySet({ gateway, stateName }) {
 }
 
 
+// IRS REGISTRY TIER — every registered nonprofit in the county, straight
+// from IRS federal records (src/data/registry.js). Deliberately rendered as
+// a lesser tier than the verified listings: no service claims, no vetting
+// badges, the registry disclaimer always attached, list capped with the
+// total shown. Gives every county in the country a real starting point
+// while the verified layer is built county by county.
+const REGISTRY_CAP = 100;
+export function RegistrySection({ locality }) {
+  const { data, loading } = useCountyRegistry(locality?.state, locality?.county);
+  if (!locality) return null;
+  if (loading) {
+    return (
+      <div className="mt-8">
+        <h4 className="text-white font-semibold mb-3">Registered organizations in {locality.county}</h4>
+        <p className="text-white/40 text-sm">Loading the federal registry for this county…</p>
+      </div>
+    );
+  }
+  if (!data || !data.orgs || data.orgs.length === 0) return null;
+  const orgs = data.orgs;
+  const shown = orgs.slice(0, REGISTRY_CAP);
+  const catCounts = new Map();
+  for (const o of orgs) {
+    const c = o.category || 'Unknown / Not Classified';
+    catCounts.set(c, (catCounts.get(c) || 0) + 1);
+  }
+  const topCats = [...catCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+  return (
+    <div className="mt-8">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
+        <h4 className="text-white font-semibold">Registered organizations in {locality.county}</h4>
+        <span className="text-[11px] uppercase tracking-wider text-white/40 border border-white/15 rounded-full px-2 py-0.5">
+          IRS registry — not individually verified
+        </span>
+      </div>
+      <p className="text-white/50 text-sm mb-3">
+        {orgs.length.toLocaleString()} registered organizations in this county.{' '}
+        {data.presentation ||
+          'Name, city and category from IRS federal records. This tier has not been individually verified — registration is a public record, not an endorsement, and services are not confirmed at this tier.'}
+      </p>
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {topCats.map(([c, n]) => (
+          <span key={c} className="text-xs text-white/50 bg-white/5 border border-white/10 rounded-full px-2.5 py-1">
+            {c} · {n.toLocaleString()}
+          </span>
+        ))}
+      </div>
+      <div className="grid md:grid-cols-2 gap-x-6 gap-y-2">
+        {shown.map((o, i) => (
+          <div key={`${o.ein}-${i}`} className="text-sm border-b border-white/5 pb-1.5">
+            <span className="text-white/80">{o.name}</span>
+            <span className="text-white/40">
+              {' '}— {[o.city, o.zip].filter(Boolean).join(' ')} · {o.category}
+            </span>
+          </div>
+        ))}
+      </div>
+      {orgs.length > REGISTRY_CAP && (
+        <p className="text-white/40 text-xs mt-3">
+          Showing the first {REGISTRY_CAP} of {orgs.length.toLocaleString()}, alphabetically. The verified
+          listings in this directory — checked against each organization&apos;s own site and screened — are
+          the ones to contact first.
+        </p>
+      )}
+    </div>
+  );
+}
+
 // The resolved-locality panel: state gateways, national locators opened
 // for the area, the county organization layer, and licensed facilities.
 // `locality` is the gazetteer-shaped object produced by searchLocalities()
@@ -387,6 +456,8 @@ export function LocalityPanel({ locality, onReset, focus }) {
         </div>
 
         <CountyOrgsSection locality={locality} onlyTags={focus?.tags} />
+
+        <RegistrySection locality={locality} />
 
         <FacilitiesSection
           key={focus ? `focus-${(focus.facilityFilters || []).join(',')}` : 'all'}
