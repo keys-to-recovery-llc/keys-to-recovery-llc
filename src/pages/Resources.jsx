@@ -1,29 +1,30 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, BookOpen, Video, FileText, Headphones, ExternalLink, Filter } from 'lucide-react';
+import { Search, BookOpen, Video, FileText, Headphones, ExternalLink, ArrowRight, Filter } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
 const resources = [
   // Beginner
-  { id: 1, title: "What is Recovery Housing?", category: "Housing", type: "Article", difficulty: "Beginner", description: "An introduction to sober living and what to expect in a recovery home environment.", link: "#" },
-  { id: 2, title: "The 12 Steps Explained", category: "12-Step", type: "Article", difficulty: "Beginner", description: "A clear breakdown of each step in the 12-step recovery program.", link: "#" },
-  { id: 3, title: "Finding Your Why in Recovery", category: "Mental Health", type: "Video", difficulty: "Beginner", description: "A short guided video on identifying personal motivation for staying sober.", link: "#" },
-  { id: 4, title: "Early Recovery: What to Expect", category: "Recovery Basics", type: "Article", difficulty: "Beginner", description: "Covers the emotional, physical, and social changes in the first 90 days of recovery.", link: "#" },
-  { id: 5, title: "Breathing for Calm", category: "Mental Health", type: "Audio", difficulty: "Beginner", description: "A guided breathing exercise designed for moments of high craving or anxiety.", link: "#" },
+  { id: 1, title: "What is Recovery Housing?", category: "Housing", type: "Article", difficulty: "Beginner", description: "An introduction to sober living and what to expect in a recovery home environment.", article: "what-is-recovery-housing" },
+  { id: 2, title: "The 12 Steps Explained", category: "12-Step", type: "Article", difficulty: "Beginner", description: "A clear breakdown of each step in the 12-step recovery program.", article: "the-12-steps-explained" },
+  { id: 3, title: "Finding Your Why in Recovery", category: "Mental Health", type: "Video", difficulty: "Beginner", description: "Johann Hari's TED talk on connection, purpose, and what really drives addiction — and recovery.", external: "https://www.youtube.com/watch?v=PY9DcIMGxMs", source: "TED · YouTube" },
+  { id: 4, title: "Early Recovery: What to Expect", category: "Recovery Basics", type: "Article", difficulty: "Beginner", description: "Covers the emotional, physical, and social changes in the first 90 days of recovery.", article: "early-recovery-what-to-expect" },
+  { id: 5, title: "Breathing for Calm", category: "Mental Health", type: "Audio", difficulty: "Beginner", description: "UCLA Mindful's free guided Breathing Meditation — a short practice for moments of craving or anxiety.", external: "https://www.uclahealth.org/uclamindful/guided-meditations", source: "UCLA Mindful" },
   // Intermediate
-  { id: 6, title: "Building a Relapse Prevention Plan", category: "Recovery Basics", type: "Worksheet", difficulty: "Intermediate", description: "A structured template for identifying triggers and creating a personal safety plan.", link: "#" },
-  { id: 7, title: "Navigating Relationships in Recovery", category: "Life Skills", type: "Article", difficulty: "Intermediate", description: "How addiction affects relationships and how to rebuild trust with loved ones.", link: "#" },
-  { id: 8, title: "Financial Literacy for Beginners", category: "Life Skills", type: "Worksheet", difficulty: "Intermediate", description: "Budgeting basics and financial planning tools for people re-entering society.", link: "#" },
-  { id: 9, title: "Trauma & Addiction: The Connection", category: "Mental Health", type: "Video", difficulty: "Intermediate", description: "An educational video on how unresolved trauma contributes to substance use.", link: "#" },
-  { id: 10, title: "Mindfulness in Recovery", category: "Mental Health", type: "Audio", difficulty: "Intermediate", description: "A 15-minute guided mindfulness session tailored for people in recovery.", link: "#" },
+  { id: 6, title: "Building a Relapse Prevention Plan", category: "Recovery Basics", type: "Worksheet", difficulty: "Intermediate", description: "SAMHSA's Matrix program handouts (via AHRQ): structured worksheets for identifying triggers and building a personal safety plan.", external: "https://integrationacademy.ahrq.gov/resources/17186", source: "SAMHSA · AHRQ" },
+  { id: 7, title: "Navigating Relationships in Recovery", category: "Life Skills", type: "Article", difficulty: "Intermediate", description: "How addiction affects relationships and how to rebuild trust with loved ones.", article: "navigating-relationships-in-recovery" },
+  { id: 8, title: "Financial Literacy for Beginners", category: "Life Skills", type: "Worksheet", difficulty: "Intermediate", description: "The CFPB's free Your Money, Your Goals booklets: plain-language tools for bills, debt, credit, and savings.", external: "https://www.consumerfinance.gov/consumer-tools/educator-tool/your-money-your-goals/booklets-talk-about-money/", source: "CFPB" },
+  { id: 9, title: "Trauma & Addiction: The Connection", category: "Mental Health", type: "Video", difficulty: "Intermediate", description: "Dr. Nadine Burke Harris's TED talk, as a TED-Ed lesson, on how childhood trauma affects health across a lifetime.", external: "https://ed.ted.com/on/eczPoVp6", source: "TED-Ed" },
+  { id: 10, title: "Mindfulness in Recovery", category: "Mental Health", type: "Audio", difficulty: "Intermediate", description: "Free guided mindfulness meditations from UCLA Mindful — short sessions for building a daily practice.", external: "https://www.uclahealth.org/uclamindful/free-guided-meditations", source: "UCLA Mindful" },
   // Advanced
-  { id: 11, title: "Supporting a Loved One in Recovery", category: "Family", type: "Article", difficulty: "Advanced", description: "A comprehensive guide for families and friends of people in active recovery.", link: "#" },
-  { id: 12, title: "Co-occurring Disorders: Dual Diagnosis", category: "Mental Health", type: "Article", difficulty: "Advanced", description: "Understanding and managing mental health conditions alongside addiction recovery.", link: "#" },
-  { id: 13, title: "SMART Recovery Workbook", category: "Recovery Basics", type: "Worksheet", difficulty: "Advanced", description: "Science-based tools for building and maintaining recovery without a 12-step framework.", link: "#" },
-  { id: 14, title: "Employment After Incarceration", category: "Life Skills", type: "Article", difficulty: "Advanced", description: "Resources and strategies for re-entering the workforce with a criminal background.", link: "#" },
-  { id: 15, title: "Peer Support Specialist Certification", category: "Career", type: "Article", difficulty: "Advanced", description: "How to turn your lived experience into a career as a certified peer support specialist.", link: "#" },
+  { id: 11, title: "Supporting a Loved One in Recovery", category: "Family", type: "Article", difficulty: "Advanced", description: "A comprehensive guide for families and friends of people in active recovery.", article: "supporting-a-loved-one-in-recovery" },
+  { id: 12, title: "Co-occurring Disorders: Dual Diagnosis", category: "Mental Health", type: "Article", difficulty: "Advanced", description: "Understanding and managing mental health conditions alongside addiction recovery.", article: "co-occurring-disorders-dual-diagnosis" },
+  { id: 13, title: "SMART Recovery Workbook", category: "Recovery Basics", type: "Worksheet", difficulty: "Advanced", description: "SMART Recovery's official toolbox of worksheets: science-based tools for building and maintaining recovery without a 12-step framework.", external: "https://smartrecovery.org/toolbox", source: "SMART Recovery" },
+  { id: 14, title: "Employment After Incarceration", category: "Life Skills", type: "Article", difficulty: "Advanced", description: "CareerOneStop's get-started guide for justice-impacted job seekers: careers, training, and how to talk about a conviction in interviews.", external: "https://reentry.careeronestop.org/JusticeImpacted/get-started-guide.aspx", source: "CareerOneStop · U.S. DOL" },
+  { id: 15, title: "Peer Support Specialist Certification", category: "Career", type: "Article", difficulty: "Advanced", description: "Washington HCA's official path to becoming a Certified Peer Support Specialist — prerequisite course, 80-hour training, and state exams.", external: "https://hca.wa.gov/billers-providers-partners/program-information-providers/peer-counselors", source: "WA Health Care Authority" },
 ];
 
 const categories = ["All", "Recovery Basics", "12-Step", "Mental Health", "Life Skills", "Housing", "Family", "Career"];
@@ -155,11 +156,18 @@ export default function ResourcesPage() {
                         </div>
                         <h3 className="text-white font-semibold mb-2 leading-snug">{r.title}</h3>
                         <p className="text-white/50 text-sm leading-relaxed flex-1 mb-4">{r.description}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#d4a574]/60 text-xs">{r.category}</span>
-                          <a href={r.link} className="flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline group-hover:gap-2 transition-all">
-                            View <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-[#d4a574]/60 text-xs">{r.source ? r.source : r.category}</span>
+                          {r.article ? (
+                            <Link to={`/Resources/${r.article}`} className="flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline group-hover:gap-2 transition-all flex-shrink-0">
+                              Read <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                          ) : (
+                            <a href={r.external} target="_blank" rel="noopener noreferrer" title="Opens external site" className="flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline group-hover:gap-2 transition-all flex-shrink-0">
+                              View <ExternalLink className="h-3.5 w-3.5" />
+                              <span className="sr-only">(opens external site)</span>
+                            </a>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
