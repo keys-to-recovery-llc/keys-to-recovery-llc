@@ -67,6 +67,19 @@ const COUNTY_ORG_ASSETS = {
   26163: '/data/orgs-mi-wayne.json', // Wayne County, MI
   48439: '/data/orgs-tx-tarrant.json', // Tarrant County, TX
   48201: '/data/orgs-tx-harris.json', // Harris County, TX
+  42003: '/data/orgs-allegheny.json', // Allegheny County, PA
+  42101: '/data/orgs-philadelphia.json', // Philadelphia County, PA
+  42091: '/data/orgs-montgomery-pa.json', // Montgomery County, PA
+  '12086': '/data/orgs-miami-dade.json', // Miami-Dade County, FL
+  '12011': '/data/orgs-broward.json', // Broward County, FL
+  '12099': '/data/orgs-palm-beach.json', // Palm Beach County, FL
+  37183: '/data/orgs-wake.json', // Wake County, NC
+  37119: '/data/orgs-mecklenburg.json', // Mecklenburg County, NC
+  36005: '/data/orgs-bronx.json', // Bronx County, NY (NYC)
+  36047: '/data/orgs-kings.json', // Kings County, NY (NYC)
+  36061: '/data/orgs-new-york.json', // New York County, NY (NYC)
+  36081: '/data/orgs-queens.json', // Queens County, NY (NYC)
+  36085: '/data/orgs-richmond.json', // Richmond County, NY (NYC)
 };
 
 const orgPromises = new Map();

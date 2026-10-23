@@ -249,7 +249,7 @@ export function FacilitiesSection({ locality, initialFilters }) {
         snapshot, not a live license check — and services may have changed, so
         please verify details when you contact a facility. The published
         directories do not include facility websites; where a facility&apos;s
-        own website has been verified (currently Washington, Tennessee, Texas, Illinois, Ohio and Michigan), a Website link
+        own website has been verified (currently Washington, Tennessee, Texas, Illinois, Ohio, Michigan, New York, Georgia, Florida, Pennsylvania and North Carolina), a Website link
         appears on its card — everywhere else, phone is the fastest way to
         reach them.
       </p>

@@ -41,6 +41,14 @@ const COUNTIES = {
   'tx-dallas': { fips: '48113', county: 'Dallas', display: 'Dallas County', state: 'TX', expected: 10 },
   'tx-harris': { fips: '48201', county: 'Harris', display: 'Harris County', state: 'TX', expected: 19 },
   'tx-tarrant': { fips: '48439', county: 'Tarrant', display: 'Tarrant County', state: 'TX', expected: 14 },
+  'broward': { fips: '12011', county: 'Broward', display: 'Broward County', state: 'FL', expected: 19 },
+  'miami-dade': { fips: '12086', county: 'Miami-Dade', display: 'Miami-Dade County', state: 'FL', expected: 12 },
+  'palm-beach': { fips: '12099', county: 'Palm Beach', display: 'Palm Beach County', state: 'FL', expected: 19 },
+  'mecklenburg': { fips: '37119', county: 'Mecklenburg', display: 'Mecklenburg County', state: 'NC', expected: 16 },
+  'wake': { fips: '37183', county: 'Wake', display: 'Wake County', state: 'NC', expected: 24 },
+  'allegheny': { fips: '42003', county: 'Allegheny', display: 'Allegheny County', state: 'PA', expected: 36 },
+  'montgomery-pa': { fips: '42091', county: 'Montgomery', display: 'Montgomery County', state: 'PA', expected: 15 },
+  'philadelphia': { fips: '42101', county: 'Philadelphia', display: 'Philadelphia County', state: 'PA', expected: 29 },
 };
 
 // Known near-miss tag spellings normalized to the canonical taxonomy.
