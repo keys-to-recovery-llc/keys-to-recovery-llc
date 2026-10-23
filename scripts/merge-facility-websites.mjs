@@ -17,6 +17,12 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const srcDir = join(repoRoot, '..', '..', 'directory-data', 'facilities', 'enrichment');
 
+// Closure-badging evidence standard: an operator's own published notice
+// (the WA/IL/MI/PA precedent). CA's 2026-10-23 closure set rests on place
+// records, delistings and press only — the enrichment worker flagged it for
+// human confirmation — so CA closures are NOT badged this wave.
+const CLOSURE_HOLD = new Set(['CA']);
+
 const norm = (v) => String(v || '').toUpperCase().replace(/\s+/g, ' ').trim();
 const key = (r) => [norm(r.name), norm(r.name2), norm(r.city), String(r.zip || '').slice(0, 5)].join('|');
 
@@ -44,7 +50,7 @@ for (const st of process.argv.slice(2)) {
   const enrich = JSON.parse(readFileSync(join(srcDir, `${st}-websites.json`), 'utf8'));
   const matched = Array.isArray(enrich) ? enrich : enrich.matched || [];
   // WA-schema files also carry operator-evidenced closures in `unmatched`.
-  const reportedClosures = (Array.isArray(enrich) ? [] : enrich.unmatched || [])
+  const reportedClosures = (CLOSURE_HOLD.has(st) ? [] : (Array.isArray(enrich) ? [] : enrich.unmatched || []))
     .filter((r) => r.reason === 'closed')
     .map((r) => {
       const ev = String(r.matchEvidence || r.evidence || '');

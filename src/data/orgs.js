@@ -80,6 +80,15 @@ const COUNTY_ORG_ASSETS = {
   36061: '/data/orgs-new-york.json', // New York County, NY (NYC)
   36081: '/data/orgs-queens.json', // Queens County, NY (NYC)
   36085: '/data/orgs-richmond.json', // Richmond County, NY (NYC)
+  '06037': '/data/orgs-los-angeles.json', // Los Angeles County, CA
+  '06059': '/data/orgs-orange.json', // Orange County, CA
+  '08031': '/data/orgs-denver.json', // Denver County, CO
+  '08041': '/data/orgs-el-paso.json', // El Paso County, CO
+  53033: '/data/orgs-king.json', // King County, WA
+  53011: '/data/orgs-clark.json', // Clark County, WA
+  53077: '/data/orgs-yakima.json', // Yakima County, WA
+  53073: '/data/orgs-whatcom.json', // Whatcom County, WA
+  53035: '/data/orgs-kitsap.json', // Kitsap County, WA
 };
 
 const orgPromises = new Map();

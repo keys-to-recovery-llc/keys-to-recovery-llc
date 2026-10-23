@@ -49,6 +49,15 @@ const COUNTIES = {
   'allegheny': { fips: '42003', county: 'Allegheny', display: 'Allegheny County', state: 'PA', expected: 36 },
   'montgomery-pa': { fips: '42091', county: 'Montgomery', display: 'Montgomery County', state: 'PA', expected: 15 },
   'philadelphia': { fips: '42101', county: 'Philadelphia', display: 'Philadelphia County', state: 'PA', expected: 29 },
+  'los-angeles': { fips: '06037', county: 'Los Angeles', display: 'Los Angeles County', state: 'CA', expected: 35 },
+  'orange': { fips: '06059', county: 'Orange', display: 'Orange County', state: 'CA', expected: 30 },
+  'denver': { fips: '08031', county: 'Denver', display: 'Denver County', state: 'CO', expected: 21 },
+  'el-paso': { fips: '08041', county: 'El Paso', display: 'El Paso County', state: 'CO', expected: 12 },
+  'clark': { fips: '53011', county: 'Clark', display: 'Clark County', state: 'WA', expected: 16 },
+  'king': { fips: '53033', county: 'King', display: 'King County', state: 'WA', expected: 19 },
+  'kitsap': { fips: '53035', county: 'Kitsap', display: 'Kitsap County', state: 'WA', expected: 21 },
+  'whatcom': { fips: '53073', county: 'Whatcom', display: 'Whatcom County', state: 'WA', expected: 14 },
+  'yakima': { fips: '53077', county: 'Yakima', display: 'Yakima County', state: 'WA', expected: 13 },
 };
 
 // Known near-miss tag spellings normalized to the canonical taxonomy.
