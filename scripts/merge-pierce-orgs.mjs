@@ -69,7 +69,7 @@ const notClear = ready.filter((o) => o.vetting.result !== 'CLEAR');
 console.log(`batch files: ${files.length} | total records: ${total} | ready: ${ready.length}`);
 console.log(`ready without vetting CLEAR: ${notClear.length}`);
 if (nonCanonicalTags.size) console.log('non-canonical tags dropped:', [...nonCanonicalTags]);
-if (ready.length !== 146) { console.error(`EXPECTED 146 ready records, got ${ready.length} — aborting`); process.exit(1); }
+if (ready.length !== 145) { console.error(`EXPECTED 145 ready records, got ${ready.length} — aborting`); process.exit(1); }
 if (notClear.length) { console.error('READY RECORDS FAILING THE GATE — aborting'); process.exit(1); }
 
 const out = {

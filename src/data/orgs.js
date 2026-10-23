@@ -33,6 +33,7 @@ import { useEffect, useState } from 'react';
 // ---------------------------------------------------------------------------
 export const EXCLUDED_EINS = new Set([
   '911741654', // SHARE & CARE HOUSE — removed 2026-10-23 on Bart's direct order (first-hand knowledge: program took its funding and spent it on itself; owner does not want it on the site)
+  '260561140', // HOMEWARD BOUND IN PUYALLUP — same outfit as Share & Care House per Bart's first-hand confirmation, removed 2026-10-23
 ]);
 
 // countyFips -> lazy asset URL. Counties without an asset have no org layer
