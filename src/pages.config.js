@@ -54,6 +54,8 @@ import Contact from './pages/Contact';
 import Apply from './pages/Apply';
 import Donate from './pages/Donate';
 import Investors from './pages/Investors';
+import Privacy from './pages/Privacy';
+import DeleteAccount from './pages/DeleteAccount';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +67,8 @@ export const PAGES = {
     "Apply": Apply,
     "Donate": Donate,
     "Investors": Investors,
+    "Privacy": Privacy,
+    "DeleteAccount": DeleteAccount,
 }
 
 export const pagesConfig = {

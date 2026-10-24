@@ -303,9 +303,16 @@ export default function Layout({ children }) {
 
           {/* Bottom */}
           <div className="border-t border-[#d4a574]/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-white/50 text-sm">
-              © {new Date().getFullYear()} Keys to Recovery LLC. All rights reserved.
-            </p>
+            <div>
+              <p className="text-white/50 text-sm">
+                © {new Date().getFullYear()} Keys to Recovery LLC. All rights reserved.
+              </p>
+              <p className="text-white/50 text-sm mt-2">
+                <Link to="/Privacy" className="hover:text-[#d4a574] transition-colors">Privacy Policy</Link>
+                <span className="mx-2 text-white/30">·</span>
+                <Link to="/DeleteAccount" className="hover:text-[#d4a574] transition-colors">Delete Account</Link>
+              </p>
+            </div>
             <div className="flex flex-col items-end gap-1">
               <p className="text-[#d4a574]/70 text-sm font-medium">EST 2026 | NAICS Code: 531110</p>
               
