@@ -6,6 +6,7 @@
 export const stepInstructions = {
   "Step One": {
     source: "Alcoholics Anonymous, Chapter 3, “More About Alcoholism,” and Chapter 5, “How It Works”",
+    video: { youtubeId: "xO1Sg21GZxE", label: "Joe & Charlie — How It Works: Steps One and Two · Big Book Study, Part 7 of 15 · 1 hr" },
     blocks: [
       { type: "quote", text: "We learned that we had to fully concede to our innermost selves that we were alcoholics. This is the first step in recovery. The delusion that we are like other people, or presently may be, has to be smashed." },
       { type: "quote", text: "We alcoholics are men and women who have lost the ability to control our drinking. We know that no real alcoholic ever recovers control. All of us felt at times that we were regaining control, but such intervals — usually brief — were inevitably followed by still less control, which led in time to pitiful and incomprehensible demoralization. We are convinced to a man that alcoholics of our type are in the grip of a progressive illness. Over any considerable period we get worse, never better." },
@@ -22,6 +23,7 @@ export const stepInstructions = {
 
   "Step Two": {
     source: "Alcoholics Anonymous, Chapter 4, “We Agnostics,” pp. 45–47",
+    video: { youtubeId: "od02us5hfUk", label: "Joe & Charlie — We Agnostics · Big Book Study, Part 6 of 15 · 38 min" },
     blocks: [
       { type: "quote", text: "Lack of power, that was our dilemma. We had to find a power by which we could live, and it had to be a Power greater than ourselves." },
       { type: "quote", text: "We found that as soon as we were able to lay aside prejudice and express even a willingness to believe in a Power greater than ourselves, we commenced to get results, even though it was impossible for any of us to fully define or comprehend that Power, which is God." },
@@ -33,6 +35,7 @@ export const stepInstructions = {
 
   "Step Three": {
     source: "Alcoholics Anonymous, Chapter 5, “How It Works,” pp. 60–63",
+    video: { youtubeId: "2nQ6a9Hz3w4", label: "Joe & Charlie — Step Three · Big Book Study, Part 8 of 15 · 7 min" },
     blocks: [
       { type: "quote", text: "Being convinced, we were at Step Three, which is that we decided to turn our will and our life over to God as we understood Him. … The first requirement is that we be convinced that any life run on self-will can hardly be a success." },
       { type: "heading", text: "The how and why of it (p. 62)" },
@@ -44,6 +47,7 @@ export const stepInstructions = {
 
   "Step Four": {
     source: "Alcoholics Anonymous, Chapter 5, “How It Works,” pp. 64–71",
+    video: { youtubeId: "TIW7iePa2V8", label: "Joe & Charlie — Step Four · Big Book Study, Part 9 of 15 · 2 hr 44 min" },
     blocks: [
       { type: "quote", text: "Next we launched out on a course of vigorous action, the first step of which is a personal housecleaning, which many of us had never attempted. Though our decision was a vital and crucial step, it could have little permanent effect unless at once followed by a strenuous effort to face, and to be rid of, the things in ourselves which had been blocking us. Our liquor was but a symptom. So we had to get down to causes and conditions." },
       { type: "quote", text: "Therefore, we started upon a personal inventory. This was Step Four. A business which takes no regular inventory usually goes broke. Taking a commercial inventory is a fact-finding and a fact-facing process. It is an effort to discover the truth about the stock-in-trade. … We did exactly the same thing with our lives. We took stock honestly. First, we searched out the flaws in our make-up which caused our failure." },
@@ -73,6 +77,7 @@ export const stepInstructions = {
 
   "Step Five": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” pp. 72–75",
+    video: { youtubeId: "1pYHfGUPIrs", label: "Joe & Charlie — Step Five · Big Book Study, Part 10 of 15 · 15 min" },
     blocks: [
       { type: "quote", text: "The best reason first: If we skip this vital step, we may not overcome drinking. Time after time newcomers have tried to keep to themselves certain facts about their lives. Trying to avoid this humbling experience, they have turned to easier methods. Almost invariably they got drunk. … But they had not learned enough of humility, fearlessness and honesty, in the sense we find it necessary, until they told someone else all their life story." },
       { type: "quote", text: "We must be entirely honest with somebody if we expect to live long or happily in this world. Rightly and naturally, we think well before we choose the person or persons with whom to take this intimate and confidential step. … If we cannot or would rather not do this, we search our acquaintance for a close-mouthed, understanding friend. … The rule is we must be hard on ourself, but always considerate of others." },
@@ -87,6 +92,7 @@ export const stepInstructions = {
 
   "Step Six": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” p. 76",
+    video: { youtubeId: "UqbTEihlZNY", label: "Joe & Charlie — Steps Six and Seven · Big Book Study, Part 11 of 15 · 14 min" },
     blocks: [
       { type: "quote", text: "If we can answer to our satisfaction, we then look at Step Six. We have emphasized willingness as being indispensable. Are we now ready to let God remove from us all the things which we have admitted are objectionable? Can He now take them all — every one? If we still cling to something we will not let go, we ask God to help us be willing." }
     ]
@@ -94,6 +100,7 @@ export const stepInstructions = {
 
   "Step Seven": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” p. 76",
+    video: { youtubeId: "UqbTEihlZNY", label: "Joe & Charlie — Steps Six and Seven · Big Book Study, Part 11 of 15 · 14 min" },
     blocks: [
       { type: "quote", text: "When ready, we say something like this:" },
       { type: "prayer", label: "The Seventh Step Prayer (p. 76)", text: "My Creator, I am now willing that you should have all of me, good and bad. I pray that you now remove from me every single defect of character which stands in the way of my usefulness to you and my fellows. Grant me strength, as I go out from here, to do your bidding. Amen." },
@@ -103,6 +110,7 @@ export const stepInstructions = {
 
   "Step Eight": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” pp. 76–77",
+    video: { youtubeId: "FmfENZLbark", label: "Joe & Charlie — Steps Eight and Nine · Big Book Study, Part 12 of 15 · 30 min" },
     blocks: [
       { type: "quote", text: "Now we need more action, without which we find that “Faith without works is dead.” Let's look at Steps Eight and Nine. We have a list of all persons we have harmed and to whom we are willing to make amends. We made it when we took inventory. We subjected ourselves to a drastic self-appraisal. Now we go out to our fellows and repair the damage done in the past. We attempt to sweep away the debris which has accumulated out of our effort to live on self-will and run the show ourselves. If we haven't the will to do this, we ask until it comes. Remember it was agreed at the beginning we would go to any lengths for victory over alcohol." }
     ]
@@ -110,6 +118,7 @@ export const stepInstructions = {
 
   "Step Nine": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” pp. 77–84",
+    video: { youtubeId: "FmfENZLbark", label: "Joe & Charlie — Steps Eight and Nine · Big Book Study, Part 12 of 15 · 30 min" },
     blocks: [
       { type: "quote", text: "Our real purpose is to fit ourselves to be of maximum service to God and the people about us. … To some people we need not, and probably should not emphasize the spiritual feature on our first approach. We might prejudice them. … He is going to be more interested in a demonstration of good will than in our talk of spiritual discoveries." },
       { type: "heading", text: "The person we dislike (p. 78)" },
@@ -126,6 +135,7 @@ export const stepInstructions = {
 
   "Step Ten": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” p. 84",
+    video: { youtubeId: "sRzPCYHkcmY", label: "Joe & Charlie — Step Ten · Big Book Study, Part 13 of 15 · 9 min" },
     blocks: [
       { type: "quote", text: "This thought brings us to Step Ten, which suggests we continue to take personal inventory and continue to set right any new mistakes as we go along. We vigorously commenced this way of living as we cleaned up the past. We have entered the world of the Spirit. Our next function is to grow in understanding and effectiveness. This is not an overnight matter. It should continue for our lifetime." },
       { type: "heading", text: "The directions (p. 84)" },
@@ -136,6 +146,7 @@ export const stepInstructions = {
 
   "Step Eleven": {
     source: "Alcoholics Anonymous, Chapter 6, “Into Action,” pp. 85–88",
+    video: { youtubeId: "zh19oL82y9M", label: "Joe & Charlie — Step Eleven · Big Book Study, Part 14 of 15 · 17 min" },
     blocks: [
       { type: "quote", text: "Step Eleven suggests prayer and meditation. We shouldn't be shy on this matter of prayer. … It works, if we have the proper attitude and work at it. It would be easy to be vague about this matter. Yet, we believe we can make some definite and valuable suggestions." },
       { type: "heading", text: "At night (p. 86)" },
@@ -151,6 +162,7 @@ export const stepInstructions = {
 
   "Step Twelve": {
     source: "Alcoholics Anonymous, Chapter 7, “Working With Others,” pp. 89–96",
+    video: { youtubeId: "Y1g6PKfTHyo", label: "Joe & Charlie — Step Twelve · Big Book Study, Part 15 of 15 · 17 min" },
     blocks: [
       { type: "quote", text: "Practical experience shows that nothing will so much insure immunity from drinking as intensive work with other alcoholics. It works when other activities fail. This is our twelfth suggestion: Carry this message to other alcoholics! You can help when no one else can. You can secure their confidence when others fail. Remember they are very ill." },
       { type: "heading", text: "Finding and approaching a prospect (pp. 89–92)" },

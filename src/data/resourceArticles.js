@@ -282,13 +282,18 @@ export const resourceArticles = {
   "the-12-steps-explained": {
     id: 2,
     lede: "The Twelve Steps are a set of actions, first written down by the earliest members of Alcoholics Anonymous in the late 1930s, that millions of people have used to stop drinking and using — and, more than that, to build a life they no longer need to escape from. Nothing on this page will try to sell you on them. The program's own tradition is attraction rather than promotion: the steps are described here as honestly as we can describe them, and what you make of them is up to you.",
+    topLink: {
+      label: "Read the Big Book online",
+      url: "https://www.aa.org/the-big-book",
+      note: "The complete book — Alcoholics Anonymous — free to read from A.A. World Services at aa.org."
+    },
     sections: [
       {
         heading: "How to read the steps",
         paragraphs: [
           "The steps are a sequence, meant to be worked in order, usually with a sponsor — someone who has worked them and can walk beside you while you do. They are not a self-improvement checklist or a set of beliefs to agree with. They are closer to a series of actions: admit, believe, decide, look, tell, repair, maintain, give away.",
           "You will notice the language of God \"as we understood Him.\" That phrase is doing deliberate work. The program does not hand anyone a definition; it leaves the understanding to each person, and people have worked these steps with understandings ranging from traditional faith to the recovery group itself. What the steps insist on is narrower and more practical than theology: that your own unaided will has not been enough, and that help — from somewhere beyond your isolated self — is available if you are willing to receive it. Nobody needs to have that figured out to begin. The only thing required to start is the honesty of Step One.",
-          "One more thing before you start: the steps were never meant to be vague. The book that introduced them — Alcoholics Anonymous, known everywhere as the Big Book — gives plain, specific directions for working each one. So under every step below, after our explanation, there is an \"Instructions\" button. Open it and you will find the book's own directions for that step, in the book's own words: the prayer on page 63 for Step Three, the written inventory format on page 65 for Step Four, the directions for Step Ten on page 84, and so on. Our explanations are the map. Those instructions are the road."
+          "One more thing before you start: the steps were never meant to be vague. The book that introduced them — Alcoholics Anonymous, known everywhere as the Big Book — gives plain, specific directions for working each one. So under every step below, after our explanation, there is an \"Instructions\" button. Open it and you will find the book's own directions for that step, in the book's own words: the prayer on page 63 for Step Three, the written inventory format on page 65 for Step Four, the directions for Step Ten on page 84, and so on. Our explanations are the map. Those instructions are the road. And because some of us absorb things better by ear than by eye, every step's instructions now end with the Joe & Charlie tape for that step — Joe McQuany and Charlie Parmley's Big Book study, the most beloved walk through this book ever recorded — so you can hear each step taught, in order, by two men who worked them."
         ]
       }
     ],

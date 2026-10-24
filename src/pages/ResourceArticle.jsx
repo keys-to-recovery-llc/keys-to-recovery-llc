@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, BookOpen, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ChevronDown, ExternalLink, Play } from 'lucide-react';
 import { resourceArticles, articleMeta } from '@/data/resourceArticles';
 import { stepInstructions } from '@/data/stepInstructions';
 
@@ -128,6 +128,36 @@ function StepCard({ step }) {
               {instructions.blocks.map((block, i) => (
                 <InstructionBlock key={i} block={block} />
               ))}
+              {instructions.video && (
+                <div className="mt-8 border-t border-white/10 pt-6">
+                  <h4 className="text-[#d4a574] font-medium tracking-widest text-xs uppercase flex items-center gap-2">
+                    <Play className="h-3.5 w-3.5" /> Hear this step taught — the Joe &amp; Charlie tapes
+                  </h4>
+                  <div className="mt-4 aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black">
+                    <iframe
+                      className="h-full w-full"
+                      src={`https://www.youtube-nocookie.com/embed/${instructions.video.youtubeId}`}
+                      title={instructions.video.label}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      referrerPolicy="strict-origin-when-cross-origin"
+                    />
+                  </div>
+                  <p className="text-white/50 text-sm mt-3">
+                    {instructions.video.label}.{' '}
+                    <a
+                      href={`https://www.youtube.com/watch?v=${instructions.video.youtubeId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#d4a574] hover:underline"
+                    >
+                      Watch on YouTube
+                    </a>{' '}
+                    if the player doesn't load.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -193,6 +223,24 @@ export default function ResourceArticle() {
           transition={{ duration: 0.5 }}
           className="max-w-3xl mx-auto"
         >
+          {article.topLink && (
+            <a
+              href={article.topLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 border border-[#d4a574]/50 bg-[#d4a574]/10 rounded-2xl p-5 md:p-6 mb-12 hover:bg-[#d4a574]/15 transition-colors group"
+            >
+              <BookOpen className="h-8 w-8 text-[#d4a574] flex-shrink-0" />
+              <span className="flex-1">
+                <span className="block text-white text-lg font-medium group-hover:underline">
+                  {article.topLink.label}
+                </span>
+                <span className="block text-white/60 text-sm mt-1">{article.topLink.note}</span>
+              </span>
+              <ExternalLink className="h-5 w-5 text-[#d4a574] flex-shrink-0" />
+            </a>
+          )}
+
           {article.sections?.map((s, i) => (
             <Section key={i} section={s} />
           ))}
