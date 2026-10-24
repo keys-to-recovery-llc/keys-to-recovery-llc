@@ -9,6 +9,7 @@
 //   POST /api/auth/request-password-reset | /set-password
 //   GET|POST /api/auth/google*                         config-gated stub (§4.7)
 //   POST /api/logs                                     (§5)
+//   POST /api/credit-chat                              Credit Repair Advocate chat
 //   GET  /api/health
 
 import { createMailer, sendWelcomeEmail } from './mailer.js';
@@ -23,6 +24,7 @@ import {
   consumePasswordResetToken,
 } from './auth.js';
 import { validateEnvelope, validateSubmissionFields, isEmail } from './validation.js';
+import { handleCreditChat } from './creditAdvocate.js';
 
 const DEFAULT_RECIPIENTS = ['support@keystorecoveryllc.com', 'bart@keystorecoveryllc.com'];
 
@@ -251,6 +253,10 @@ export default {
 
       if (pathname === '/api/contact' && method === 'POST') {
         return handleContact(env, await readJson(request));
+      }
+
+      if (pathname === '/api/credit-chat' && method === 'POST') {
+        return handleCreditChat(env, request, await readJson(request));
       }
 
       if (pathname === '/api/auth/register' && method === 'POST') {

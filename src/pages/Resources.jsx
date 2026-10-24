@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import LocalityFinder from '@/components/LocalityFinder';
+import CreditChat from '@/components/CreditChat';
 import { resourceArticles } from '@/data/resourceArticles';
 
 const resources = [
@@ -122,6 +123,9 @@ export default function ResourcesPage() {
           </Link>
         </div>
       </section>
+
+      {/* Credit Repair Advocate — AI chat (GPT rebuilt on our own worker) */}
+      <CreditChat />
 
       {/* Find help near you — state/county/city selections + plain-language search (owner directive) */}
       <LocalityFinder />
