@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ThemeProvider from '@/components/ThemeProvider';
 import BottomTab from '@/components/BottomTab';
+import InstallButton from '@/components/InstallButton';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
@@ -257,6 +258,9 @@ export default function Layout({ children }) {
                 <a href="#" className="w-10 h-10 bg-[#d4a574]/10 rounded-full flex items-center justify-center hover:bg-[#d4a574] hover:text-black transition-colors">
                   <Instagram className="h-5 w-5" />
                 </a>
+              </div>
+              <div className="mt-6">
+                <InstallButton />
               </div>
             </div>
 
