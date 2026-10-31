@@ -9,6 +9,8 @@
 //   POST /api/auth/request-password-reset | /set-password
 //   GET|POST /api/auth/google*                         config-gated stub (§4.7)
 //   POST /api/logs                                     (§5)
+//   POST /api/analytics                                anonymous usage counts
+//   GET  /api/analytics/summary                       admin-only aggregates
 //   POST /api/credit-chat                              Credit Repair Advocate chat
 //   GET  /api/health
 
@@ -25,6 +27,12 @@ import {
 } from './auth.js';
 import { validateEnvelope, validateSubmissionFields, isEmail } from './validation.js';
 import { handleCreditChat } from './creditAdvocate.js';
+import {
+  cleanAnalyticsPayload,
+  recordAnalyticsEvent,
+  pruneAnalyticsEvents,
+  analyticsSummary,
+} from './analytics.js';
 
 const DEFAULT_RECIPIENTS = ['support@keystorecoveryllc.com', 'bart@keystorecoveryllc.com'];
 
@@ -323,11 +331,43 @@ export default {
         return new Response(null, { status: 204 });
       }
 
+      if (pathname === '/api/analytics' && method === 'POST') {
+        // Anonymous usage counts (docs/ANALYTICS.md). Fire-and-forget:
+        // invalid input is dropped, errors are swallowed, the client
+        // always gets 204 so analytics can never break the site.
+        try {
+          const cleaned = cleanAnalyticsPayload(await readJson(request));
+          if (cleaned) await recordAnalyticsEvent(env.DB, cleaned);
+        } catch {
+          /* analytics must never fail the request */
+        }
+        return new Response(null, { status: 204 });
+      }
+
+      if (pathname === '/api/analytics/summary' && method === 'GET') {
+        // Admin-only aggregate counts. Never row-level data, never
+        // submission contents — counts by kind only.
+        const user = await getSessionUser(env.DB, env, request);
+        if (!user || user.role !== 'admin') return json(403, { error: 'forbidden' });
+        return json(200, await analyticsSummary(env.DB));
+      }
+
       if (pathname.startsWith('/api/')) return json(404, { error: 'not_found' });
       return json(404, { error: 'not_found' });
     } catch (err) {
       console.error('[worker] unhandled error:', err);
       return json(500, { error: 'internal_error' });
+    }
+  },
+
+  // Daily prune: raw anonymous event rows older than the retention
+  // window are deleted (see worker/src/analytics.js). Requires the
+  // [triggers] crons entry in wrangler.toml.
+  async scheduled(event, env, ctx) {
+    try {
+      await pruneAnalyticsEvents(env.DB);
+    } catch (err) {
+      console.error('[worker] analytics prune failed:', err);
     }
   },
 };

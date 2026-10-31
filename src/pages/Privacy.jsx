@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           <Shield className="h-10 w-10 text-[#d4a574] mb-6" />
           <h1 className="text-4xl md:text-5xl font-light text-white mb-4">Privacy Policy</h1>
           <p className="text-white/50 mb-2">Keys to Recovery LLC · keystorecoveryllc.com</p>
-          <p className="text-white/50 mb-8">Effective October 23, 2026</p>
+          <p className="text-white/50 mb-8">Effective October 31, 2026</p>
 
           <P>
             Keys to Recovery LLC ("we," "us") runs this website and the Keys to Recovery app.
@@ -46,6 +46,15 @@ export default function PrivacyPage() {
             keep internal records of pages visited, used only to operate and improve the site.
           </P>
           <P>
+            <span className="text-white font-medium">Anonymous usage counts.</span> We also count,
+            in aggregate, which pages are viewed and which directory states, resource categories,
+            and buttons (such as the donation button) are used. These counts contain no names,
+            no IP addresses, no cookies, and no identifiers of any kind, so they cannot identify
+            individual visitors. They help us learn which resources people actually use. Raw
+            counts are deleted after 90 days. We use no third-party analytics and no
+            advertising trackers.
+          </P>
+          <P>
             <span className="text-white font-medium">Cookies.</span> We use only the cookies
             needed to keep you signed in and the site working. We do not use advertising or
             cross-site tracking cookies.
@@ -55,7 +64,8 @@ export default function PrivacyPage() {
           <P>
             We use your information to run the site, keep your account working, review housing
             applications, answer your messages, and protect the safety of our residents,
-            applicants, and staff. That is the whole list.
+            applicants, and staff. The anonymous usage counts described above are used only to
+            understand, in aggregate, which resources people use. That is the whole list.
           </P>
 
           <H>What we never do</H>

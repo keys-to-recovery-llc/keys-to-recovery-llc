@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, ExternalLink, DollarSign, Users, Home, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { track } from '@/lib/analytics';
 
 export default function DonatePage() {
   const impacts = [
@@ -55,7 +56,7 @@ export default function DonatePage() {
                   <p className="text-4xl font-bold text-[#f5c518] tracking-wide">$KEYSTORECOVERY</p>
                 </div>
 
-                <a href="https://cash.app/$KEYSTORECOVERY" target="_blank" rel="noopener noreferrer">
+                <a href="https://cash.app/$KEYSTORECOVERY" target="_blank" rel="noopener noreferrer" onClick={() => track('donate_click')}>
                   <Button className="w-full bg-[#00c853] hover:bg-[#00b347] text-white font-bold py-6 text-xl rounded-2xl shadow-lg shadow-[#00c853]/30 transition-all duration-300 hover:shadow-[#00c853]/50 hover:scale-105">
                     <DollarSign className="mr-2 h-6 w-6" />
                     Open Cash App & Donate

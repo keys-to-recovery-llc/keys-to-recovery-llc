@@ -22,6 +22,12 @@ database_name = "keys-to-recovery-llc"
 database_id = "3813a37f-0660-4eab-bdd7-05a34eb77a85"
 migrations_dir = "migrations"
 
+# Daily prune of raw anonymous analytics rows (90-day retention).
+# This worker has no other scheduled triggers; this entry adds one,
+# it does not replace anything.
+[triggers]
+crons = ["0 10 * * *"]
+
 [vars]
 APP_BASE_URL = "https://keystorecoveryllc.com"
 EMAIL_FROM = "no-reply@keystorecoveryllc.com"

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { post } from '@/api/client';
+import { trackPageview } from './analytics';
 import { pagesConfig } from '@/pages.config';
 
 export default function NavigationTracker() {
@@ -35,6 +36,12 @@ export default function NavigationTracker() {
             post('/api/logs', { page: pageName }).catch(() => {
                 // Silently fail - logging shouldn't break the app
             });
+        }
+
+        // Anonymous usage counts for every visitor (docs/ANALYTICS.md).
+        // Separate from /api/logs, which stays signed-in-users only.
+        if (pageName) {
+            trackPageview(pageName);
         }
     }, [location, isAuthenticated, Pages, mainPageKey]);
 

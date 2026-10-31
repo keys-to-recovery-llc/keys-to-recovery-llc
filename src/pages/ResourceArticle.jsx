@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, BookOpen, ChevronDown, ExternalLink, Play } from 'lucide-react';
 import { resourceArticles, articleMeta } from '@/data/resourceArticles';
 import { stepInstructions } from '@/data/stepInstructions';
+import { track } from '@/lib/analytics';
 
 function Section({ section }) {
   return (
@@ -228,6 +229,7 @@ export default function ResourceArticle() {
               href={article.topLink.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => { try { track('resource_outbound', new URL(article.topLink.url).hostname); } catch { /* ignore */ } }}
               className="flex items-center gap-4 border border-[#d4a574]/50 bg-[#d4a574]/10 rounded-2xl p-5 md:p-6 mb-12 hover:bg-[#d4a574]/15 transition-colors group"
             >
               <BookOpen className="h-8 w-8 text-[#d4a574] flex-shrink-0" />

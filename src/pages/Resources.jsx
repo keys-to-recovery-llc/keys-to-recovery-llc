@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, BookOpen, Video, FileText, Headphones, ExternalLink, ArrowRight, Filter } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import LocalityFinder from '@/components/LocalityFinder';
 import CreditChat from '@/components/CreditChat';
+import { track } from '@/lib/analytics';
 import { resourceArticles } from '@/data/resourceArticles';
 
 const resources = [
@@ -52,6 +53,11 @@ const typeColors = {
 export default function ResourcesPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
+
+  // Anonymous resource-demand count (docs/ANALYTICS.md).
+  useEffect(() => {
+    if (category !== 'All') track('resource_category', category);
+  }, [category]);
   const [type, setType] = useState('All');
   const [difficulty, setDifficulty] = useState('All');
 
@@ -200,7 +206,7 @@ export default function ResourcesPage() {
                               Read <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
                           ) : (
-                            <a href={r.external} target="_blank" rel="noopener noreferrer" title="Opens external site" className="flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline group-hover:gap-2 transition-all flex-shrink-0">
+                            <a href={r.external} target="_blank" rel="noopener noreferrer" title="Opens external site" onClick={() => { try { track('resource_outbound', new URL(r.external).hostname); } catch { /* ignore */ } }} className="flex items-center gap-1 text-[#d4a574] text-sm font-medium hover:underline group-hover:gap-2 transition-all flex-shrink-0">
                               View <ExternalLink className="h-3.5 w-3.5" />
                               <span className="sr-only">(opens external site)</span>
                             </a>

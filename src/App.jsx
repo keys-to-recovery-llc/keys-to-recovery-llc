@@ -7,6 +7,7 @@ import Account from './pages/Account';
 import Resources from './pages/Resources';
 import Directory from './pages/Directory';
 import ResourceArticle from './pages/ResourceArticle';
+import Analytics from './pages/Analytics';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -73,6 +74,9 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/Account" element={
         <LayoutWrapper currentPageName="Account"><Account /></LayoutWrapper>
+      } />
+      <Route path="/Analytics" element={
+        <LayoutWrapper currentPageName="Analytics"><Analytics /></LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

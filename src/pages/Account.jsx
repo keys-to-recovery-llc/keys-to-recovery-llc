@@ -260,6 +260,13 @@ export default function AccountPage() {
                     Sign Out
                   </Button>
                 </div>
+                {user.role === 'admin' && (
+                  <div className="pt-2">
+                    <a href="/Analytics" className="text-[#1e3a5f] underline text-sm">
+                      View site analytics
+                    </a>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

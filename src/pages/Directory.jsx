@@ -11,6 +11,7 @@ import {
 import { stateGateways, stateGatewayByAbbr } from '@/data/states';
 import { FilterPill, ExtLink, ALL_STATES_AND_TERRITORIES } from '@/components/directory-sections';
 import LocalityFinder from '@/components/LocalityFinder';
+import { track } from '@/lib/analytics';
 
 export default function DirectoryPage() {
   // National directory filters (taxonomy is the canonical filter set)
@@ -23,6 +24,15 @@ export default function DirectoryPage() {
 
   // Facility roster counts (SAMHSA stats, lazy-loaded for the hero line)
   const [facStats, setFacStats] = useState(null);
+
+  // Anonymous directory-demand counts (docs/ANALYTICS.md). Free-text
+  // search is never sent — only the picked state and category tag.
+  useEffect(() => {
+    if (stateSelect !== 'All') track('directory_state', stateSelect);
+  }, [stateSelect]);
+  useEffect(() => {
+    if (tag !== 'All') track('directory_tag', tag);
+  }, [tag]);
   useEffect(() => {
     let live = true;
     fetch('/data/facilities-stats.json')
