@@ -97,6 +97,39 @@ function InstructionBlock({ block }) {
   );
 }
 
+function StepVideo({ heading, video }) {
+  return (
+    <div className="mt-8 border-t border-white/10 pt-6">
+      <h4 className="text-[#d4a574] font-medium tracking-widest text-xs uppercase flex items-center gap-2">
+        <Play className="h-3.5 w-3.5" /> {heading}
+      </h4>
+      <div className="mt-4 aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black">
+        <iframe
+          className="h-full w-full"
+          src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}`}
+          title={video.label}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+      <p className="text-white/50 text-sm mt-3">
+        {video.label}.{' '}
+        <a
+          href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#d4a574] hover:underline"
+        >
+          Watch on YouTube
+        </a>{' '}
+        if the player doesn't load.
+      </p>
+    </div>
+  );
+}
+
 function StepCard({ step }) {
   const [open, setOpen] = useState(false);
   const instructions = stepInstructions[step.title];
@@ -129,35 +162,11 @@ function StepCard({ step }) {
               {instructions.blocks.map((block, i) => (
                 <InstructionBlock key={i} block={block} />
               ))}
+              {instructions.howardVideo && (
+                <StepVideo heading="Hear this step taught — Howard E." video={instructions.howardVideo} />
+              )}
               {instructions.video && (
-                <div className="mt-8 border-t border-white/10 pt-6">
-                  <h4 className="text-[#d4a574] font-medium tracking-widest text-xs uppercase flex items-center gap-2">
-                    <Play className="h-3.5 w-3.5" /> Hear this step taught — the Joe &amp; Charlie tapes
-                  </h4>
-                  <div className="mt-4 aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black">
-                    <iframe
-                      className="h-full w-full"
-                      src={`https://www.youtube-nocookie.com/embed/${instructions.video.youtubeId}`}
-                      title={instructions.video.label}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      referrerPolicy="strict-origin-when-cross-origin"
-                    />
-                  </div>
-                  <p className="text-white/50 text-sm mt-3">
-                    {instructions.video.label}.{' '}
-                    <a
-                      href={`https://www.youtube.com/watch?v=${instructions.video.youtubeId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#d4a574] hover:underline"
-                    >
-                      Watch on YouTube
-                    </a>{' '}
-                    if the player doesn't load.
-                  </p>
-                </div>
+                <StepVideo heading="Hear this step taught — the Joe & Charlie tapes" video={instructions.video} />
               )}
             </div>
           )}
